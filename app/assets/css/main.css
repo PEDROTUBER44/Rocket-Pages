@@ -1,0 +1,35 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+body {
+  @apply bg-gray-50 dark:bg-[#08090a] text-gray-900 dark:text-gray-200;
+}
+
+/* Definição direta das cores no root para garantir visibilidade global */
+:root {
+  --color-rocket-50: #ca000d;
+  --color-rocket-100: #ca000d;
+  --color-rocket-200: #ca000d;
+  --color-rocket-300: #ca000d;
+  --color-rocket-400: #ca000d;
+  --color-rocket-500: #ca000d;
+  --color-rocket-600: #ca000d;
+  --color-rocket-700: #ca000d;
+  --color-rocket-800: #ca000d;
+  --color-rocket-900: #ca000d;
+  --color-rocket-950: #ca000d;
+}
+
+@theme {
+  --color-rocket-50: #ca000d;
+  --color-rocket-100: #ca000d;
+  --color-rocket-200: #ca000d;
+  --color-rocket-300: #ca000d;
+  --color-rocket-400: #ca000d;
+  --color-rocket-500: #ca000d;
+  --color-rocket-600: #ca000d;
+  --color-rocket-700: #ca000d;
+  --color-rocket-800: #ca000d;
+  --color-rocket-900: #ca000d;
+  --color-rocket-950: #ca000d;
+}
