@@ -1,61 +1,27 @@
 <script setup lang="ts">
-// Estado para controlar se o menu lateral está aberto
-const isOpen = ref(false);
+// Menu logic handled by AppHeader
 
-// Itens de navegação do menu
-const items = [
-  { label: "Serviços", to: "/servicos", icon: "i-lucide-briefcase" },
-  { label: "Recursos", to: "/recursos", icon: "i-lucide-book-open" },
-  { label: "Empresas", to: "/empresas", icon: "i-lucide-building-2" },
-  { label: "Sobre Nós", to: "/about", icon: "i-lucide-info" },
-];
-
-// Accordion items para menu mobile cascata
-const accordionItems = [
-  { label: "Serviços", icon: "i-lucide-briefcase", defaultOpen: true, slot: "services" },
-  { label: "Navegação", icon: "i-lucide-compass", slot: "navigation" }
-];
-
-const serviceLinks = [
-  { label: 'Todos os Serviços', icon: 'i-lucide-layers', to: '/servicos' },
-  { label: 'Rocket Cloud', icon: 'i-heroicons-cloud', to: '/services/cloud' },
-  { label: 'Rocket Fitness', icon: 'i-heroicons-heart', to: '/services/fitness' },
-  { label: 'Rocket Devel', icon: 'i-heroicons-code-bracket', to: '/services/devel' },
-  { label: 'Rocket Marketing', icon: 'i-heroicons-rocket-launch', to: '/services/marketing' },
-];
-
-const navigationLinks = [
-  { label: 'Recursos', icon: 'i-lucide-book-open', to: '/recursos' },
-  { label: 'Empresas', icon: 'i-lucide-building-2', to: '/empresas' },
-  { label: 'Sobre Nós', icon: 'i-lucide-info', to: '/about' },
-];
-
-// Lógica de troca de tema (Dark/Light)
-const colorMode = useColorMode();
-const isDark = computed({
-  get() {
-    return colorMode.value === "dark";
-  },
-  set() {
-    colorMode.preference = colorMode.value === "dark" ? "light" : "dark";
-  },
-});
-
-// --- Background Particles Logic ---
-const particles = ref<
-  { left: string; size: string; delay: string; duration: string }[]
->([]);
+// --- Scroll Animation (same as servicos.vue) ---
+const setupScrollAnimation = () => {
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.1
+  };
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+  const elements = document.querySelectorAll('.reveal-on-scroll');
+  elements.forEach(el => observer.observe(el));
+};
 
 onMounted(() => {
-  // Generate particles
-  for (let i = 0; i < 20; i++) {
-    particles.value.push({
-      left: Math.random() * 100 + "%",
-      size: Math.random() * 3 + 1 + "px",
-      delay: Math.random() * 5 + "s",
-      duration: Math.random() * 10 + 10 + "s",
-    });
-  }
+  setupScrollAnimation();
 });
 
 // --- Affiliate Benefits Data ---
@@ -112,6 +78,63 @@ const calculatedRevenue = computed(() => {
   });
 });
 
+// --- New Sections Data ---
+const targetAudience = [
+  {
+    title: 'Influenciadores Tech',
+    description: 'Monetize sua audiência fiel indicando produtos que resolvem problemas reais.',
+    icon: 'i-lucide-smartphone',
+    color: 'text-pink-500',
+    bg: 'bg-pink-500/10'
+  },
+  {
+    title: 'Software Houses',
+    description: 'Amplie seu portfólio oferecendo nossa infraestrutura como White Label ou parceria.',
+    icon: 'i-lucide-code-2',
+    color: 'text-blue-500',
+    bg: 'bg-blue-500/10'
+  },
+  {
+    title: 'Consultores de TI',
+    description: 'Agregue valor à sua consultoria com soluções enterprise prontas para uso.',
+    icon: 'i-lucide-briefcase',
+    color: 'text-yellow-500',
+    bg: 'bg-yellow-500/10'
+  },
+  {
+    title: 'Agências Digitais',
+    description: 'Ofereça performance web e apps de alta conversão para seus clientes.',
+    icon: 'i-lucide-rocket',
+    color: 'text-orange-500',
+    bg: 'bg-orange-500/10'
+  }
+];
+
+const platformTools = [
+  {
+    title: 'Marketing Kit',
+    description: 'Banners, copys e vídeos de alta conversão prontos para uso.',
+    icon: 'i-lucide-palette'
+  },
+  {
+    title: 'Link Builder',
+    description: 'Crie links profundos para qualquer página e rastreie a origem.',
+    icon: 'i-lucide-link'
+  },
+  {
+    title: 'Real-time Analytics',
+    description: 'Acompanhe cliques, leads e conversões ao vivo no seu dashboard.',
+    icon: 'i-lucide-activity'
+  },
+  {
+    title: 'Gerente Dedicado',
+    description: 'Suporte estratégico via WhatsApp para Top Afiliados.',
+    icon: 'i-lucide-headset'
+  }
+];
+
+
+
 // --- FAQ Items ---
 const faqItems = [
   {
@@ -130,85 +153,39 @@ const faqItems = [
     slot: 'item'
   }
 ];
+
+// Scroll Functionality
+const benefitsSection = ref<HTMLElement | null>(null);
+
+const scrollToBenefits = () => {
+  benefitsSection.value?.scrollIntoView({ behavior: 'smooth' });
+};
+
+useAppSeo({
+  title: 'Programa de Afiliados',
+  description: 'Seja parceiro da Rocket. Indique soluções enterprise e ganhe comissões recorrentes. Programa de afiliados B2B líder de mercado.',
+  image: '/og-default.png',
+  breadcrumbs: [
+      { name: 'Home', url: 'https://rocketweb.tech' },
+      { name: 'Afiliados', url: 'https://rocketweb.tech/recursos' }
+  ]
+});
 </script>
 
 <template>
-  <div
-    class="min-h-screen bg-[#050505] text-gray-100 font-sans relative flex flex-col"
-  >
-    <!-- Background Effects -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
-      <div class="grid-bg absolute inset-0"></div>
+  <div class="min-h-screen bg-[#050505] text-white overflow-x-hidden font-sans selection:bg-[#ca000d] selection:text-white relative flex flex-col">
+    
+    <!-- Background Elements -->
+    <div class="fixed inset-0 grid-pattern z-0"></div>
+    <div class="fixed top-0 right-0 w-[500px] h-[500px] bg-[#ca000d]/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="fixed bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none"></div>
 
-      <!-- Floating Blobs (Neutral for Subpages) -->
-      <div class="absolute inset-0">
-        <div
-          class="floating-blob blob-neutral top-[-10%] left-[-5%] w-[500px] h-[500px]"
-        ></div>
-        <div
-          class="floating-blob blob-white bottom-[-10%] right-[-5%] w-[400px] h-[400px]"
-        ></div>
-      </div>
-
-      <!-- Particles -->
-      <div class="absolute inset-0">
-        <div
-          v-for="(p, i) in particles"
-          :key="i"
-          class="particle"
-          :style="{
-            left: p.left,
-            width: p.size,
-            height: p.size,
-            animationDelay: p.delay,
-            animationDuration: p.duration,
-          }"
-        ></div>
-      </div>
-    </div>
-
-    <header
-      class="fixed top-0 z-50 w-full border-b border-white/10 bg-[#050505]/80 backdrop-blur-xl"
-    >
-      <UContainer class="flex h-16 items-center justify-between gap-3">
-        <div class="flex items-center gap-2 lg:flex-1">
-          <NuxtLink
-            to="/"
-            class="flex items-center hover:opacity-80 transition-opacity"
-          >
-            <img src="/logo-rocket.webp" alt="Rocket Logo" class="h-8 w-auto" />
-          </NuxtLink>
-        </div>
-
-        <div class="hidden lg:flex flex-1 justify-center">
-          <UNavigationMenu :items="items" variant="link" />
-        </div>
-
-        <div class="flex items-center justify-end gap-2 lg:flex-1">
-          <UButton
-            label="Login"
-            to="/login"
-            color="primary"
-            variant="solid"
-            class="hidden sm:inline-flex text-white"
-          />
-
-          <UButton
-            icon="i-lucide-menu"
-            color="neutral"
-            variant="ghost"
-            class="lg:hidden"
-            aria-label="Menu"
-            @click="isOpen = true"
-          />
-        </div>
-      </UContainer>
-    </header>
+    <AppHeader />
 
     <main class="flex-grow flex flex-col relative z-10">
       <!-- Hero Section -->
       <UContainer class="pt-32 lg:pt-52 pb-24 text-center w-full">
-        <div class="max-w-2xl mx-auto space-y-6">
+        <div class="max-w-2xl mx-auto space-y-6 reveal-on-scroll">
           <h1 class="text-6xl font-extrabold text-white">
             Programa de <span class="text-primary-500">Afiliados</span>
           </h1>
@@ -228,17 +205,39 @@ const faqItems = [
               label="Saiba Mais"
               variant="link"
               color="neutral"
-              icon="i-lucide-arrow-right"
-              trailing
-              to="#beneficios"
-              class="text-white hover:no-underline"
-            />
+              class="text-white hover:no-underline group"
+              @click="scrollToBenefits"
+            >
+              <template #trailing>
+                <UIcon name="i-lucide-arrow-right" class="w-5 h-5 transition-transform duration-300 group-hover:translate-x-2" />
+              </template>
+            </UButton>
           </div>
         </div>
       </UContainer>
 
+      <!-- Target Audience Section -->
+      <section class="py-24 px-6 md:px-12 reveal-on-scroll" style="transition-delay: 100ms;">
+        <UContainer>
+          <div class="text-center mb-16">
+             <span class="text-primary-500 font-semibold tracking-wider text-sm uppercase mb-3 block">Para quem é?</span>
+             <h2 class="text-3xl font-bold text-white">Parceiros Ideais</h2>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div v-for="(target, i) in targetAudience" :key="i" class="enhanced-card p-6 rounded-2xl hover:-translate-y-1 transition-all duration-500 group">
+               <div :class="['w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110 duration-500', target.bg, target.color]">
+                 <UIcon :name="target.icon" class="w-6 h-6" />
+               </div>
+               <h3 class="text-lg font-bold text-white mb-2">{{ target.title }}</h3>
+               <p class="text-sm text-gray-400 leading-relaxed">{{ target.description }}</p>
+            </div>
+          </div>
+        </UContainer>
+      </section>
+
       <!-- Affiliate Benefits Section -->
-      <section id="beneficios" class="py-24 px-6">
+      <!-- Affiliate Benefits Section -->
+      <section id="beneficios" ref="benefitsSection" class="py-24 px-6 md:px-12 scroll-mt-24 reveal-on-scroll" style="transition-delay: 200ms;">
         <UContainer>
           <div class="text-center mb-16 space-y-4">
             <h2 class="text-4xl font-bold text-white tracking-tight">
@@ -252,7 +251,7 @@ const faqItems = [
             <div 
               v-for="benefit in affiliateBenefits" 
               :key="benefit.title" 
-              class="group relative bg-[#0a0a0a]/60 backdrop-blur-xl p-8 rounded-3xl border border-white/10 shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:border-primary-500/30 overflow-hidden text-center"
+              class="group relative enhanced-card p-8 rounded-3xl transition-all duration-500 hover:-translate-y-2 overflow-hidden text-center"
             >
               <div class="absolute inset-0 -translate-x-full group-hover:translate-x-[150%] transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 z-20 pointer-events-none"></div>
               <div class="relative z-10">
@@ -267,8 +266,66 @@ const faqItems = [
         </UContainer>
       </section>
 
+      <!-- Platform Tools Section -->
+      <section class="py-24 px-6 relative overflow-hidden reveal-on-scroll" style="transition-delay: 300ms;">
+         <!-- Background Glow -->
+         <div class="absolute top-1/2 right-0 w-[500px] h-[500px] bg-primary-500/5 rounded-full blur-[120px] pointer-events-none"></div>
+
+         <UContainer>
+            <div class="flex flex-col lg:flex-row items-center gap-16 relative z-10">
+               <div class="lg:w-1/2 space-y-8">
+                  <h2 class="text-3xl md:text-4xl font-bold text-white leading-tight">
+                    Tudo o que você precisa para <span class="text-primary-500">Vender Mais</span>
+                  </h2>
+                  <p class="text-gray-400 text-lg">
+                    Não te deixamos na mão. Nossa plataforma fornece infraestrutura completa de marketing e dados para você focar apenas em trazer tráfego.
+                  </p>
+                  
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
+                     <div v-for="(tool, i) in platformTools" :key="i" class="flex items-start gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors">
+                        <div class="mt-1 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center shrink-0 border border-white/10 shadow-inner">
+                           <UIcon :name="tool.icon" class="w-5 h-5 text-gray-300" />
+                        </div>
+                        <div>
+                           <h4 class="text-white font-bold mb-1">{{ tool.title }}</h4>
+                           <p class="text-xs text-gray-500 leading-relaxed">{{ tool.description }}</p>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               
+               <div class="lg:w-1/2 relative">
+                  <!-- Abstract Dashboard Visual -->
+                  <div class="enhanced-card p-6 rounded-2xl rotate-2 hover:rotate-0 transition-transform duration-500">
+                     <div class="flex items-center justify-between mb-8 border-b border-white/5 pb-4">
+                        <div class="space-y-1">
+                           <div class="h-2 w-24 bg-white/10 rounded-full"></div>
+                           <div class="h-2 w-16 bg-white/5 rounded-full"></div>
+                        </div>
+                        <div class="h-8 w-8 rounded-full bg-primary-500/20"></div>
+                     </div>
+                     <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="h-32 rounded-xl bg-white/5 border border-white/5 p-4 flex flex-col justify-end">
+                            <span class="text-[10px] text-gray-500 mb-1">Clicks</span>
+                            <span class="text-2xl font-bold text-white">1,240</span>
+                        </div>
+                        <div class="h-32 rounded-xl bg-primary-500/10 border border-primary-500/20 p-4 flex flex-col justify-end">
+                            <span class="text-[10px] text-gray-500 mb-1">Comissão</span>
+                            <span class="text-2xl font-bold text-primary-500">R$ 4.2k</span>
+                        </div>
+                     </div>
+                     <div class="space-y-3">
+                        <div class="h-12 w-full bg-white/5 rounded-lg"></div>
+                        <div class="h-12 w-full bg-white/5 rounded-lg"></div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </UContainer>
+      </section>
+
       <!-- How It Works Section -->
-      <section class="py-24 px-6 relative">
+      <section class="py-24 px-6 relative reveal-on-scroll" style="transition-delay: 400ms;">
         <UContainer>
           <div class="text-center mb-16">
             <h2 class="text-3xl font-bold text-white">Como Iniciar sua Jornada</h2>
@@ -282,12 +339,12 @@ const faqItems = [
             <div 
               v-for="step in steps" 
               :key="step.number" 
-              class="relative z-10 flex flex-col items-center text-center"
+              class="relative z-10 flex flex-col items-center text-center group"
             >
               <div 
                 :class="[
-                  'w-24 h-24 rounded-full bg-[#0a0a0a] flex items-center justify-center mb-6 shadow-lg',
-                  step.active ? 'border-2 border-primary-500 shadow-primary-500/30' : 'border-2 border-white/20'
+                  'w-24 h-24 rounded-full bg-[#0a0a0a] flex items-center justify-center mb-6 shadow-lg transition-all duration-300 group-hover:scale-110',
+                  step.active ? 'border-2 border-primary-500 shadow-primary-500/30' : 'border-2 border-white/20 group-hover:border-primary-500/50'
                 ]"
               >
                 <span class="text-3xl font-bold text-white">{{ step.number }}</span>
@@ -299,8 +356,11 @@ const faqItems = [
         </UContainer>
       </section>
 
+      <!-- Testimonials Section -->
+
+
       <!-- Revenue Simulator Section -->
-      <section class="py-24 px-6">
+      <section class="py-24 px-6 reveal-on-scroll" style="transition-delay: 500ms;">
         <UContainer class="max-w-5xl">
           <div class="relative bg-[#0a0a0a]/60 backdrop-blur-xl p-8 md:p-12 rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
             <div class="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full blur-[100px] pointer-events-none"></div>
@@ -324,7 +384,7 @@ const faqItems = [
                     step="5" 
                     v-model="userCount"
                     class="slider-rocket w-full"
-                  >
+                  />
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -340,13 +400,13 @@ const faqItems = [
               </div>
 
               <div class="relative">
-                <div class="stats-card bg-black/40 border border-primary-500/40 rounded-xl p-8 text-center backdrop-blur-xl animate-float">
+                <div class="stats-card bg-black/40 border border-primary-500/40 rounded-xl p-6 sm:p-8 text-center backdrop-blur-xl animate-float">
                   <p class="text-gray-400 text-sm uppercase tracking-wider mb-2">Seu Faturamento Mensal</p>
-                  <div class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 mb-2">
+                  <div class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 mb-2">
                     {{ calculatedRevenue }}
                   </div>
-                  <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-500 text-xs font-bold uppercase tracking-wide">
-                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                  <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-500 text-xs font-bold uppercase tracking-wide">
+                    <span class="w-2 h-2 rounded-full bg-primary-500 animate-pulse"></span>
                     Recorrente
                   </div>
                 </div>
@@ -357,313 +417,58 @@ const faqItems = [
       </section>
 
       <!-- FAQ Section -->
-      <section class="py-24 px-6 relative">
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-primary-500/5 to-transparent pointer-events-none"></div>
-        
-        <UContainer class="max-w-4xl relative z-10">
-          <div class="text-center mb-16">
-            <span class="text-primary-500 font-semibold tracking-wider text-sm uppercase mb-3 block">Tire suas dúvidas</span>
-            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Dúvidas Frequentes</h2>
-            <p class="text-gray-400 max-w-xl mx-auto">Respostas para as perguntas mais comuns sobre nosso programa de afiliados.</p>
-          </div>
-          
-          <UAccordion 
-            :items="faqItems" 
-            multiple
-            :ui="{
-              root: 'flex flex-col gap-4',
-              item: 'border border-white/10 rounded-2xl bg-black/40 backdrop-blur-sm overflow-hidden',
-              trigger: 'group flex items-center justify-between w-full px-6 py-5 text-left hover:bg-white/5 transition-all focus:outline-none',
-              content: 'px-6 pt-4 pb-5 text-gray-400 text-base leading-relaxed border-t border-white/10',
-              label: 'text-white font-medium text-base',
-              trailingIcon: 'w-5 h-5 text-primary-500 transition-transform duration-200 group-data-[state=open]:rotate-180'
-            }"
-          />
-          
-          <p class="text-center text-gray-500 mt-12 text-sm">
-            Ainda tem dúvidas? 
-            <NuxtLink to="/contact" class="text-primary-500 hover:text-primary-400 transition-colors font-medium">Entre em contato conosco</NuxtLink>
-          </p>
-        </UContainer>
+      <section class="py-24 px-6">
+        <FaqSection 
+          :items="faqItems" 
+          title="Dúvidas Frequentes"
+          description="Respostas para as perguntas mais comuns sobre nosso programa de afiliados."
+        />
       </section>
 
       <!-- Final CTA Section -->
-      <section class="py-24 px-6">
+      <section class="py-24 px-6 reveal-on-scroll" style="transition-delay: 700ms;">
         <UContainer>
-          <div class="relative rounded-3xl overflow-hidden p-12 md:p-20 text-center border border-white/10">
-            <div class="absolute inset-0 bg-gradient-to-br from-primary-500/20 to-black z-0"></div>
-            <div class="absolute inset-0 grid-bg opacity-10 z-0"></div>
-            
-            <div class="relative z-10 max-w-3xl mx-auto space-y-8">
-              <h2 class="text-3xl md:text-5xl font-bold text-white">Pronto para a Independência Financeira?</h2>
-              <p class="text-lg text-gray-300">Não deixe dinheiro na mesa. Cada dia que você espera é um cliente que outro afiliado está convertendo.</p>
-              
-              <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <UButton
-                  class="glow-button py-4 px-10 text-base font-bold bg-primary-500 hover:bg-primary-600 text-white rounded-full shadow-lg shadow-primary-900/20"
-                  variant="solid"
-                  to="/contact"
-                >
-                  Cadastrar Agora
-                </UButton>
-              </div>
-            </div>
-          </div>
+          <BaseCtaSection
+            title="Pronto para a Independência Financeira?"
+            description="Não deixe dinheiro na mesa. Cada dia que você espera é um cliente que outro afiliado está convertendo."
+            button-label="Cadastrar Agora"
+            button-to="/contact"
+          />
         </UContainer>
       </section>
     </main>
 
-    <footer class="bg-black border-t border-white/10 pt-20 pb-10 relative z-20">
-      <div class="mx-auto max-w-7xl px-6 lg:px-8">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-          <!-- Brand Column -->
-          <div class="col-span-2 md:col-span-1">
-            <NuxtLink to="/" class="flex items-center mb-6">
-              <img src="/logo-rocket.webp" alt="Rocket Logo" class="h-10 w-auto" />
-            </NuxtLink>
-            <p class="text-gray-500 text-sm leading-relaxed">
-              Impulsionando a inovação corporativa através de tecnologia de
-              ponta, segurança e performance.
-            </p>
-          </div>
+    <AppFooter />
 
-          <!-- Soluções Column -->
-          <div>
-            <h4 class="text-white font-bold mb-4">Soluções</h4>
-            <ul class="space-y-2 text-sm text-gray-400">
-              <li>
-                <NuxtLink to="#" class="hover:text-red-500 transition-colors"
-                  >Cloud Computing</NuxtLink
-                >
-              </li>
-              <li>
-                <NuxtLink to="#" class="hover:text-red-500 transition-colors"
-                  >Cibersegurança</NuxtLink
-                >
-              </li>
-              <li>
-                <NuxtLink to="#" class="hover:text-red-500 transition-colors"
-                  >DevOps</NuxtLink
-                >
-              </li>
-              <li>
-                <NuxtLink to="#" class="hover:text-red-500 transition-colors"
-                  >Big Data</NuxtLink
-                >
-              </li>
-            </ul>
-          </div>
-
-          <!-- Empresa Column -->
-          <div>
-            <h4 class="text-white font-bold mb-4">Empresa</h4>
-            <ul class="space-y-2 text-sm text-gray-400">
-              <li>
-                <NuxtLink to="#" class="hover:text-red-500 transition-colors"
-                  >Sobre Nós</NuxtLink
-                >
-              </li>
-              <li>
-                <NuxtLink to="#" class="hover:text-red-500 transition-colors"
-                  >Carreiras</NuxtLink
-                >
-              </li>
-              <li>
-                <NuxtLink to="#" class="hover:text-red-500 transition-colors"
-                  >Blog</NuxtLink
-                >
-              </li>
-              <li>
-                <NuxtLink to="#" class="hover:text-red-500 transition-colors"
-                  >Imprensa</NuxtLink
-                >
-              </li>
-            </ul>
-          </div>
-
-          <!-- Legal Column -->
-          <div>
-            <h4 class="text-white font-bold mb-4">Legal</h4>
-            <ul class="space-y-2 text-sm text-gray-400">
-              <li>
-                <NuxtLink to="#" class="hover:text-red-500 transition-colors"
-                  >Privacidade</NuxtLink
-                >
-              </li>
-              <li>
-                <NuxtLink to="#" class="hover:text-red-500 transition-colors"
-                  >Termos de Uso</NuxtLink
-                >
-              </li>
-              <li>
-                <NuxtLink to="#" class="hover:text-red-500 transition-colors"
-                  >Compliance</NuxtLink
-                >
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- Bottom Section -->
-        <div
-          class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4"
-        >
-          <p class="text-sm text-gray-500">
-            © 2025 Rocket Enterprise Inc. Todos os direitos reservados.
-          </p>
-
-          <!-- Social Icons -->
-          <div class="flex gap-6">
-            <NuxtLink
-              to="#"
-              class="text-gray-500 hover:text-white transition-colors"
-            >
-              <span class="sr-only">LinkedIn</span>
-              <UIcon name="i-lucide-linkedin" class="w-5 h-5" />
-            </NuxtLink>
-            <NuxtLink
-              to="#"
-              class="text-gray-500 hover:text-white transition-colors"
-            >
-              <span class="sr-only">Twitter</span>
-              <UIcon name="i-lucide-twitter" class="w-5 h-5" />
-            </NuxtLink>
-            <NuxtLink
-              to="#"
-              class="text-gray-500 hover:text-white transition-colors"
-            >
-              <span class="sr-only">Instagram</span>
-              <UIcon name="i-lucide-instagram" class="w-5 h-5" />
-            </NuxtLink>
-          </div>
-        </div>
-
-        <div class="mt-6 text-center">
-          <p class="text-xs text-gray-600 italic">
-            "Porque dele, e por meio dele, e para ele são todas as coisas. A ele
-            seja a glória para sempre. Amém!" (Rm 11:36)
-          </p>
-        </div>
-      </div>
-    </footer>
-
-    <ClientOnly>
-      <USlideover v-model:open="isOpen" side="left" :ui="{ content: '!w-[280px] !max-w-[280px] !flex-none' }">
-        <template #content>
-          <div class="flex flex-col h-full bg-[#0a0a0a] border-r border-white/10 w-full">
-            <div class="flex items-center justify-between p-6 mb-2">
-              <div class="flex items-center">
-                <img src="/logo-rocket.webp" alt="Rocket Logo" class="h-7 w-auto" />
-              </div>
-              <UButton icon="i-lucide-x" color="neutral" variant="ghost" @click="isOpen = false" />
-            </div>
-
-            <div class="flex-1 overflow-y-auto custom-scrollbar space-y-2 px-6">
-              <UAccordion 
-                :items="accordionItems" 
-                :ui="{ 
-                  item: 'pt-0 pb-2 text-sm text-white',
-                  trigger: 'px-3 py-2 text-gray-300 hover:text-white bg-transparent hover:bg-white/5 font-medium w-full justify-start rounded-md mb-1' 
-                }"
-              >
-                <template #services>
-                  <div class="pl-4 mt-1 space-y-1 border-l border-white/10 ml-2">
-                    <NuxtLink 
-                      v-for="item in serviceLinks"
-                      :key="item.label"
-                      :to="item.to"
-                      @click="isOpen = false"
-                      class="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200"
-                    >
-                      <UIcon :name="item.icon" class="w-4 h-4" />
-                      {{ item.label }}
-                    </NuxtLink>
-                  </div>
-                </template>
-
-                <template #navigation>
-                  <div class="pl-4 mt-1 space-y-1 border-l border-white/10 ml-2">
-                    <NuxtLink 
-                      v-for="item in navigationLinks"
-                      :key="item.label"
-                      :to="item.to"
-                      @click="isOpen = false"
-                      class="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200"
-                    >
-                      <UIcon :name="item.icon" class="w-4 h-4" />
-                      {{ item.label }}
-                    </NuxtLink>
-                  </div>
-                </template>
-              </UAccordion>
-            </div>
-
-            <div class="mt-auto p-6 border-t border-white/10 space-y-4">
-              <UButton block size="lg" label="Login" to="/login" color="primary" variant="solid" class="text-white" @click="isOpen = false" />
-            </div>
-          </div>
-        </template>
-      </USlideover>
-    </ClientOnly>
   </div>
 </template>
 
 <style scoped>
-/* === High-End Background Styles === */
-.grid-bg {
-  background-size: 50px 50px;
-  background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+/* === Background Grid Pattern === */
+.grid-pattern {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
   mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+  opacity: 1;
+  pointer-events: none;
 }
 
-.floating-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  animation: float-slow 10s infinite ease-in-out;
+/* === REVEAL ON SCROLL === */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), 
+              transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
-.blob-neutral {
-  background: rgba(40, 40, 40, 0.3); /* Neutral Gray */
-}
-
-.blob-white {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.particle {
-  position: absolute;
-  background: white;
-  border-radius: 50%;
-  opacity: 0.1; /* Initial subtle opacity */
-  bottom: -10px; /* Start slightly below visibility */
-  animation: rise linear infinite;
-}
-
-@keyframes float-slow {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-  50% {
-    transform: translate(-20px, 30px);
-  }
-}
-
-@keyframes rise {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 0;
-  }
-  50% {
-    opacity: 0.3;
-  } /* Peak visibility */
-  100% {
-    transform: translateY(-100vh) scale(0);
-    opacity: 0;
-  }
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0) translateZ(0);
 }
 
 /* === New Styles for Recursos === */
@@ -757,6 +562,7 @@ select.input-rocket option {
 
 /* Range Slider Styling */
 .slider-rocket {
+  appearance: none;
   -webkit-appearance: none;
   width: 100%;
   background: transparent;

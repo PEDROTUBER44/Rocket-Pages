@@ -1,32 +1,21 @@
 <script setup lang="ts">
-// --- Layout State ---
-const isOpen = ref(false);
-
-const items = [
-  { label: "Serviços", to: "/servicos", icon: "i-lucide-briefcase" },
-  { label: "Recursos", to: "/recursos", icon: "i-lucide-book-open" },
-  { label: "Empresas", to: "/empresas", icon: "i-lucide-building-2" },
-  { label: "Sobre Nós", to: "/about", icon: "i-lucide-info" },
-];
-
-// Accordion items para menu mobile cascata
-const accordionItems = [
-  { label: "Serviços", icon: "i-lucide-briefcase", defaultOpen: true, slot: "services" },
-  { label: "Navegação", icon: "i-lucide-compass", slot: "navigation" }
-];
-
-const serviceLinks = [
-  { label: 'Todos os Serviços', icon: 'i-lucide-layers', to: '/servicos' },
-  { label: 'Rocket Cloud', icon: 'i-heroicons-cloud', to: '/services/cloud' },
-  { label: 'Rocket Fitness', icon: 'i-heroicons-heart', to: '/services/fitness' },
-  { label: 'Rocket Devel', icon: 'i-heroicons-code-bracket', to: '/services/devel' },
-  { label: 'Rocket Marketing', icon: 'i-heroicons-rocket-launch', to: '/services/marketing' },
-];
-
-const navigationLinks = [
-  { label: 'Recursos', icon: 'i-lucide-book-open', to: '/recursos' },
-  { label: 'Empresas', icon: 'i-lucide-building-2', to: '/empresas' },
-  { label: 'Sobre Nós', icon: 'i-lucide-info', to: '/about' },
+// --- Trust Items Data ---
+const trustItems = [
+  {
+    icon: 'i-lucide-award',
+    title: 'Experiência Comprovada',
+    desc: '+500 academias confiam na nossa tecnologia para gerenciar seus negócios.'
+  },
+  {
+    icon: 'i-lucide-headset',
+    title: 'Suporte 24/7',
+    desc: 'Atendimento humano disponível a qualquer hora, por chat, telefone ou email.'
+  },
+  {
+    icon: 'i-lucide-shield-check',
+    title: 'Dados Seguros',
+    desc: 'Conformidade total com LGPD e criptografia de ponta para proteger seus dados.'
+  }
 ];
 
 // --- Solution Cards Data ---
@@ -69,8 +58,64 @@ const solutions = [
   }
 ];
 
-// --- Particles for background ---
-const particles = ref<{ left: string; size: string; delay: string; duration: string }[]>([]);
+// --- Pricing Data ---
+const basicPlanFeatures = [
+  'App White Label personalizado',
+  'CRM básico com até 500 alunos',
+  'Gestão de planos e mensalidades',
+  'Check-in por QR Code',
+  'Suporte por email'
+];
+
+const proPlanFeatures = [
+  'Tudo do plano Academia',
+  'Alunos ilimitados',
+  'Integração com catracas biométricas',
+  'Smart Coach AI incluso',
+  'Rocket Live & VOD',
+  'Gerente de conta dedicado'
+];
+
+const comparisonTable = [
+  { feature: 'Alunos', basic: 'Até 500', pro: 'Ilimitado', proBold: true },
+  { feature: 'App White Label', basic: '✓', pro: '✓' },
+  { feature: 'Integração Wearable', basic: 'Básica', pro: 'Avançada', proBold: true },
+  { feature: 'Streaming (Live/VOD)', basic: '—', pro: '✓', proHighlight: true },
+  { feature: 'Smart Coach AI', basic: '—', pro: '✓', proBold: true },
+  { feature: 'Suporte', basic: 'Email', pro: '24/7 Prioritário', proBold: true }
+];
+
+// --- FAQ Data ---
+const faqItems = [
+  {
+    label: 'Como funciona o aplicativo White Label?',
+    content: 'Desenvolvemos um aplicativo exclusivo para a sua academia, publicado na Apple Store e Google Play com a sua marca, logo e cores. Seus alunos baixam o app e têm acesso a treinos, check-in, agendamentos e muito mais.',
+  },
+  {
+    label: 'Posso integrar com catracas e equipamentos?',
+    content: 'Sim! Temos integração nativa com as principais marcas de catracas do mercado (Henry, Dimep, TopData). Também integramos com wearables como Apple Watch, Garmin e Polar para monitoramento em tempo real.',
+  },
+  {
+    label: 'Quanto tempo leva para implementar?',
+    content: 'O tempo médio de implementação é de 2 a 4 semanas, dependendo da complexidade. Isso inclui migração de dados, configuração do sistema e treinamento da sua equipe.',
+  },
+  {
+    label: 'Meus dados estão seguros?',
+    content: 'Absolutamente. Utilizamos criptografia AES-256, servidores com certificação ISO 27001 e estamos em total conformidade com a LGPD. Seus dados e os dados dos seus alunos estão protegidos.',
+  },
+  {
+    label: 'Vocês oferecem período de teste?',
+    content: 'Sim! Oferecemos 14 dias de teste grátis com todas as funcionalidades do plano Pro. Sem compromisso e sem necessidade de cartão de crédito.',
+  }
+];
+
+// --- Security Checklist ---
+const securityChecklist = [
+  'Criptografia AES-256 em todos os dados',
+  'Conformidade total com LGPD',
+  'Backups automáticos diários',
+  'Autenticação de dois fatores'
+];
 
 // --- Scroll Animation ---
 const setupScrollAnimation = () => {
@@ -91,78 +136,39 @@ const setupScrollAnimation = () => {
   elements.forEach(el => observer.observe(el));
 };
 
-// --- Bento Effects ---
-const setupBentoEffects = () => {
-  document.querySelectorAll('.bento-card').forEach(card => {
-    (card as HTMLElement).onmousemove = (e: MouseEvent) => {
-      const rect = (card as HTMLElement).getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      (card as HTMLElement).style.setProperty("--mouse-x", `${x}px`);
-      (card as HTMLElement).style.setProperty("--mouse-y", `${y}px`);
-    };
-  });
+// --- Scroll to Pricing ---
+const pricingSection = ref<HTMLElement | null>(null);
+
+const scrollToPricing = () => {
+  pricingSection.value?.scrollIntoView({ behavior: 'smooth' });
 };
 
 onMounted(() => {
-  // Generate particles
-  for (let i = 0; i < 15; i++) {
-    particles.value.push({
-      left: Math.random() * 100 + '%',
-      size: Math.random() * 3 + 1 + 'px',
-      delay: Math.random() * 5 + 's',
-      duration: Math.random() * 10 + 10 + 's'
-    });
-  }
-  
-  // Setup animations
   setupScrollAnimation();
-  setupBentoEffects();
 });
 
-useHead({
-  title: 'Rocket Fitness - Soluções Digitais para Academias'
+useAppSeo({
+  title: 'Rocket Fitness',
+  description: 'Soluções digitais para academias. Aplicativos White Label, CRM e gestão administrativa integrada.',
+  image: '/og-fitness.png',
+  breadcrumbs: [
+      { name: 'Home', url: 'https://rocketweb.tech' },
+      { name: 'Serviços', url: 'https://rocketweb.tech/servicos' },
+      { name: 'Rocket Fitness', url: 'https://rocketweb.tech/services/fitness' }
+  ]
 });
 </script>
 
 <template>
   <div class="min-h-screen bg-[#050505] text-white overflow-x-hidden font-sans selection:bg-[#ca000d] selection:text-white relative flex flex-col">
     
-    <!-- Background Particles -->
-    <div class="fixed inset-0 pointer-events-none z-0">
-      <div
-        v-for="(p, i) in particles"
-        :key="i"
-        class="particle"
-        :style="{
-          left: p.left,
-          width: p.size,
-          height: p.size,
-          animationDelay: p.delay,
-          animationDuration: p.duration
-        }"
-      ></div>
-    </div>
+    <!-- Background Elements -->
+    <div class="fixed inset-0 grid-pattern z-0"></div>
+    <div class="fixed top-0 right-0 w-[500px] h-[500px] bg-[#ca000d]/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="fixed bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none"></div>
 
     <!-- HEADER -->
-    <header class="fixed top-0 z-50 w-full border-b border-white/10 bg-[#050505]/80 backdrop-blur-xl">
-      <UContainer class="flex h-16 items-center justify-between gap-3">
-        <div class="flex items-center gap-2 lg:flex-1">
-          <NuxtLink to="/" class="flex items-center hover:opacity-80 transition-opacity">
-            <img src="/logo-rocket.webp" alt="Rocket Logo" class="h-8 w-auto" />
-          </NuxtLink>
-        </div>
-
-        <div class="hidden lg:flex flex-1 justify-center">
-          <UNavigationMenu :items="items" variant="link" class="gap-x-4" />
-        </div>
-
-        <div class="flex items-center justify-end gap-2 lg:flex-1">
-          <UButton label="Login" to="/login" color="primary" variant="solid" class="hidden sm:inline-flex text-white" />
-          <UButton icon="i-lucide-menu" color="neutral" variant="ghost" class="lg:hidden" aria-label="Menu" @click="isOpen = true" />
-        </div>
-      </UContainer>
-    </header>
+    <AppHeader />
 
     <!-- MAIN CONTENT -->
     <main class="flex-grow relative z-10">
@@ -173,25 +179,40 @@ useHead({
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
           <div class="floating-element" style="width: 400px; height: 400px; top: 10%; left: -10%;"></div>
           <div class="floating-element" style="width: 300px; height: 300px; bottom: 20%; right: -5%; animation-delay: -5s;"></div>
-          <div class="grid-pattern"></div>
         </div>
 
         <div class="mx-auto max-w-7xl px-6 lg:px-8 py-20 relative z-10 text-center lg:text-left lg:flex lg:items-center lg:gap-16">
           <!-- Left Column - Text -->
-          <div class="lg:w-1/2">
+          <div class="lg:w-1/2 reveal-on-scroll">
             <div class="inline-flex items-center gap-2 rounded-full bg-[#ca000d]/10 px-3 py-1 text-sm font-semibold text-[#ca000d] ring-1 ring-inset ring-[#ca000d]/20 mb-6">
               <span class="animate-pulse">●</span> Novo Rocket System 2.0
             </div>
             <h1 class="text-5xl font-bold tracking-tight text-white sm:text-7xl mb-6">
               Sua academia <br/>
-              <span class="text-gradient-red">conectada ao futuro.</span>
+              <span class="text-gradient">conectada ao futuro.</span>
             </h1>
             <p class="mt-6 text-lg leading-8 text-gray-400">
               Plataformas digitais de alta performance para academias, boxes de Crossfit e personal trainers. Transforme suor em dados e dados em resultados.
             </p>
-            <div class="mt-10 flex items-center justify-center lg:justify-start gap-x-6">
-              <UButton size="lg" label="Agendar Demo Gratuita" color="primary" class="glow-button text-white" to="/contact" />
-              <UButton size="lg" label="Ver recursos" variant="link" color="neutral" icon="i-lucide-arrow-right" trailing to="#solucoes" class="text-white hover:no-underline" />
+            <div class="mt-10 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-x-6 gap-y-4">
+              <UButton 
+                size="xl" 
+                label="Agendar Demo Gratuita" 
+                color="primary" 
+                class="glow-button text-white w-full sm:w-auto justify-center" 
+                icon="i-lucide-arrow-right"
+                trailing
+                to="/contact" 
+              />
+              <UButton 
+                size="xl" 
+                label="Ver Planos" 
+                variant="outline" 
+                color="neutral" 
+                icon="i-lucide-layers"
+                class="w-full sm:w-auto border-white/20 hover:bg-white/10 text-white justify-center"
+                @click="scrollToPricing" 
+              />
             </div>
 
             <!-- Stats Grid -->
@@ -212,7 +233,7 @@ useHead({
           </div>
 
           <!-- Right Column - Floating Card -->
-          <div class="lg:w-1/2 mt-16 lg:mt-0 relative">
+          <div class="lg:w-1/2 mt-16 lg:mt-0 relative reveal-on-scroll" style="transition-delay: 200ms;">
             <div class="relative enhanced-card rounded-2xl p-4 border-[#ca000d]/30 animate-float-slow">
               <div class="bg-neutral-900 rounded-xl overflow-hidden aspect-[4/3] relative border border-white/5">
                 <div class="absolute inset-0 bg-gradient-to-tr from-[#ca000d]/20 to-transparent opacity-50"></div>
@@ -246,7 +267,7 @@ useHead({
               </div>
             </div>
             <!-- Floating Badge -->
-            <div class="absolute -bottom-10 -left-10 enhanced-card p-4 rounded-xl flex items-center gap-3 animate-float-alt bg-black/80">
+            <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-auto sm:-left-6 enhanced-card p-4 rounded-xl flex items-center gap-3 animate-float-alt bg-black/90 border border-[#ca000d]/20 w-max max-w-[90vw]">
               <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-500">
                 <UIcon name="i-lucide-check" class="w-5 h-5" />
               </div>
@@ -259,97 +280,247 @@ useHead({
         </div>
       </div>
 
-      <!-- SOLUTIONS SECTION -->
-      <section id="solucoes" class="py-24 relative">
+      <!-- TRUST SECTION (WHY ROCKET FITNESS) -->
+      <section id="trust" class="py-24 relative">
         <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#ca000d]/50 to-transparent"></div>
-
+        
         <UContainer>
-          <div class="mx-auto max-w-2xl text-center mb-16">
-            <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl mb-4">
-              Soluções <span class="text-[#ca000d]">Completas</span>
-            </h2>
-            <p class="text-gray-400">
-              Ferramentas integradas para cobrir cada aspecto do seu negócio fitness, desde a recepção até o aplicativo no bolso do aluno.
-            </p>
+          <BaseSectionHeader 
+            title="Por que Rocket Fitness?" 
+            description="Excelência tecnológica e suporte dedicado para o sucesso da sua academia."
+            class="text-center mb-16"
+          />
+
+          <div class="grid md:grid-cols-3 gap-8">
+            <BaseEnhancedCard 
+              v-for="(item, index) in trustItems" 
+              :key="item.title"
+              class="p-8 rounded-2xl group reveal-on-scroll"
+              :style="{ transitionDelay: `${index * 100}ms` }"
+            >
+              <div class="w-12 h-12 bg-[#ca000d]/10 rounded-xl flex items-center justify-center mb-6 border border-[#ca000d]/20 group-hover:border-[#ca000d] transition-colors">
+                <UIcon :name="item.icon" class="w-6 h-6 text-[#ca000d]" />
+              </div>
+              <h3 class="text-xl font-bold text-white mb-3">{{ item.title }}</h3>
+              <p class="text-gray-400 leading-relaxed">{{ item.desc }}</p>
+            </BaseEnhancedCard>
           </div>
+        </UContainer>
+      </section>
+
+      <!-- SOLUTIONS SECTION -->
+      <section id="solucoes" class="py-24 relative bg-[#0a0a0a]">
+        <UContainer>
+          <BaseSectionHeader 
+            title="Soluções Completas" 
+            description="Ferramentas integradas para cobrir cada aspecto do seu negócio fitness, desde a recepção até o aplicativo no bolso do aluno."
+            class="text-center mb-16"
+          />
 
           <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div 
+            <BaseEnhancedCard 
               v-for="(solution, index) in solutions" 
               :key="index" 
-              class="enhanced-card rounded-2xl p-8 group cursor-pointer"
-              :class="{ 'border-[#ca000d]/30 relative overflow-hidden': solution.featured }"
+              class="p-8 rounded-2xl group cursor-pointer reveal-on-scroll"
+              :featured="solution.featured"
+              :style="{ transitionDelay: `${index * 100}ms` }"
             >
-              <div v-if="solution.featured" class="absolute top-0 right-0 bg-[#ca000d] text-white text-xs font-bold px-3 py-1 rounded-bl-lg">Destaque</div>
               <div class="w-14 h-14 rounded-xl bg-[#ca000d]/10 flex items-center justify-center mb-6 group-hover:bg-[#ca000d] transition-colors duration-300">
                 <UIcon :name="solution.icon" class="w-7 h-7 text-[#ca000d] group-hover:text-white transition-colors" />
               </div>
               <h3 class="text-xl font-bold text-white mb-3">{{ solution.title }}</h3>
               <p class="text-gray-400 text-sm leading-relaxed">{{ solution.description }}</p>
-            </div>
+            </BaseEnhancedCard>
           </div>
         </UContainer>
       </section>
 
       <!-- ECOSYSTEM / BENTO GRID SECTION -->
-      <section class="py-24 relative bg-[#0a0a0a]">
+      <section class="py-24 relative">
         <UContainer>
-          <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 reveal-on-scroll">
-            <div>
-              <h2 class="text-3xl md:text-5xl font-bold mb-4 text-white">Ecossistema <br>Integrado</h2>
-              <p class="text-gray-400 max-w-md">Uma visão profunda de como nossos módulos se conectam para maximizar resultados.</p>
-            </div>
-            <UButton variant="link" color="neutral" label="Explorar todas as features" icon="i-lucide-arrow-right" trailing class="text-white hover:text-[#ca000d] hover:no-underline" />
-          </div>
+          <BaseSectionHeader 
+            title="Ecossistema Integrado" 
+            description="Uma visão profunda de como nossos módulos se conectam para maximizar resultados."
+            class="mb-12"
+            :centered="false"
+          >
+            <template #title>
+              Ecossistema <span class="text-[#ca000d]">Integrado</span>
+            </template>
+          </BaseSectionHeader>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 grid-rows-2 gap-4 h-auto lg:h-[600px] reveal-on-scroll">
+          <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4 auto-rows-[140px] reveal-on-scroll">
             
-            <!-- Large Card - 2x2 -->
-            <div class="bento-card md:col-span-2 lg:col-span-2 row-span-2 rounded-3xl p-8 flex flex-col justify-between group">
-              <div>
-                <div class="w-12 h-12 bg-[#ca000d]/20 text-[#ca000d] rounded-xl flex items-center justify-center text-xl mb-6">
-                  <UIcon name="i-lucide-dumbbell" class="w-6 h-6" />
+            <!-- Large Card - App Experience (spans 2 cols, 2 rows) -->
+            <BaseBentoCard class="md:col-span-2 md:row-span-2 group relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-br from-[#ca000d]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div class="relative z-10 h-full flex flex-col">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="w-12 h-12 bg-gradient-to-br from-[#ca000d] to-[#ff4444] rounded-xl flex items-center justify-center shadow-lg shadow-[#ca000d]/30">
+                    <UIcon name="i-lucide-smartphone" class="w-6 h-6 text-white" />
+                  </div>
+                  <div class="flex items-center gap-2 text-xs">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span class="text-green-400">Live</span>
+                  </div>
                 </div>
-                <h3 class="text-2xl font-bold text-white mb-2">Experiência do Aluno</h3>
-                <p class="text-gray-400 text-sm leading-relaxed">
-                  Ofereça treinos em vídeo, check-in por QR Code e gamificação. Aumente a retenção oferecendo uma experiência digital premium que leva sua marca no bolso do aluno.
+                <h3 class="text-xl font-bold text-white mb-2">App White Label</h3>
+                <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                  Seu app exclusivo publicado nas lojas com sua marca.
                 </p>
-              </div>
-              <div class="mt-8 relative h-48 bg-black/20 rounded-xl border border-white/5 overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" alt="App Preview">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                <div class="absolute bottom-4 left-4 text-white font-mono text-xs flex gap-2">
-                  <span class="bg-[#ca000d] px-2 py-1 rounded">iOS</span>
-                  <span class="bg-white/10 px-2 py-1 rounded">Android</span>
+                <div class="mt-auto relative flex-1 min-h-[120px] bg-black/40 rounded-xl border border-white/5 overflow-hidden">
+                  <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:scale-110 transition-transform duration-700" alt="App Preview">
+                  <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+                  <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                    <div class="flex gap-2">
+                      <span class="bg-[#ca000d] px-2 py-1 rounded text-xs font-bold text-white">iOS</span>
+                      <span class="bg-white/20 px-2 py-1 rounded text-xs text-white">Android</span>
+                    </div>
+                    <div class="text-xs text-gray-400">v2.0</div>
+                  </div>
                 </div>
               </div>
-            </div>
+            </BaseBentoCard>
 
-            <!-- Medium Card - Financeiro -->
-            <div class="bento-card md:col-span-1 rounded-3xl p-6 flex flex-col justify-center">
-              <UIcon name="i-lucide-file-text" class="w-8 h-8 text-[#ca000d] mb-4" />
-              <h3 class="text-lg font-bold text-white mb-2">Financeiro</h3>
-              <p class="text-gray-400 text-xs">Recorrência automática e emissão de NFe simplificada.</p>
-            </div>
-
-            <!-- Medium Card - CRM with glow -->
-            <div class="bento-card md:col-span-1 rounded-3xl p-6 flex flex-col justify-center relative overflow-hidden">
-              <div class="absolute -right-4 -top-4 w-24 h-24 bg-[#ca000d]/20 blur-xl rounded-full"></div>
-              <UIcon name="i-lucide-pie-chart" class="w-8 h-8 text-white mb-4" />
-              <h3 class="text-lg font-bold text-white mb-2">CRM</h3>
-              <p class="text-gray-400 text-xs">Automação de mensagens para recuperação de inativos.</p>
-            </div>
-
-            <!-- Horizontal Card - Acesso Biométrico -->
-            <div class="bento-card md:col-span-2 rounded-3xl p-6 flex items-center justify-between gap-6">
-              <div class="max-w-[60%]">
-                <h3 class="text-xl font-bold text-white mb-2">Acesso Biométrico</h3>
-                <p class="text-gray-400 text-sm">Integração nativa com catracas e reconhecimento facial.</p>
+            <!-- Analytics Card with Chart (spans 2 cols) -->
+            <BaseBentoCard class="md:col-span-2 group relative overflow-hidden">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <UIcon name="i-lucide-bar-chart-3" class="w-5 h-5 text-[#ca000d]" />
+                    <h3 class="text-lg font-bold text-white">Analytics</h3>
+                  </div>
+                  <p class="text-gray-500 text-xs">Dados em tempo real</p>
+                </div>
+                <div class="text-right">
+                  <div class="text-2xl font-bold text-white">847</div>
+                  <div class="text-xs text-green-400">+12% hoje</div>
+                </div>
               </div>
-              <div class="w-16 h-16 rounded-full border-2 border-[#ca000d] border-dashed animate-spin-slow flex items-center justify-center">
-                <UIcon name="i-lucide-fingerprint" class="w-6 h-6 text-white" />
+              <div class="flex items-end justify-between gap-1 h-12 mt-auto">
+                <div class="flex-1 bg-[#ca000d]/20 rounded-t h-[30%] group-hover:bg-[#ca000d]/40 transition-all"></div>
+                <div class="flex-1 bg-[#ca000d]/20 rounded-t h-[50%] group-hover:bg-[#ca000d]/40 transition-all"></div>
+                <div class="flex-1 bg-[#ca000d]/20 rounded-t h-[70%] group-hover:bg-[#ca000d]/40 transition-all"></div>
+                <div class="flex-1 bg-[#ca000d]/20 rounded-t h-[45%] group-hover:bg-[#ca000d]/40 transition-all"></div>
+                <div class="flex-1 bg-[#ca000d]/20 rounded-t h-[60%] group-hover:bg-[#ca000d]/40 transition-all"></div>
+                <div class="flex-1 bg-[#ca000d]/20 rounded-t h-[80%] group-hover:bg-[#ca000d]/40 transition-all"></div>
+                <div class="flex-1 bg-[#ca000d] rounded-t h-[95%] shadow-[0_0_20px_rgba(202,0,13,0.5)]"></div>
               </div>
-            </div>
+            </BaseBentoCard>
+
+            <!-- CRM Card with Avatar Stack (spans 2 cols) -->
+            <BaseBentoCard class="md:col-span-2 group relative overflow-hidden">
+              <div class="absolute -right-8 -top-8 w-32 h-32 bg-[#ca000d]/10 blur-3xl rounded-full group-hover:bg-[#ca000d]/20 transition-colors"></div>
+              <div class="relative z-10">
+                <div class="flex items-center gap-2 mb-3">
+                  <UIcon name="i-lucide-users" class="w-5 h-5 text-[#ca000d]" />
+                  <h3 class="text-lg font-bold text-white">CRM Inteligente</h3>
+                </div>
+                <p class="text-gray-400 text-xs mb-4">Recuperação automática de inativos</p>
+                <div class="flex items-center justify-between">
+                  <div class="flex -space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 border-2 border-[#0a0a0a] flex items-center justify-center text-xs text-white font-bold">A</div>
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 border-2 border-[#0a0a0a] flex items-center justify-center text-xs text-white font-bold">M</div>
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-green-600 border-2 border-[#0a0a0a] flex items-center justify-center text-xs text-white font-bold">J</div>
+                    <div class="w-8 h-8 rounded-full bg-white/10 border-2 border-[#0a0a0a] flex items-center justify-center text-xs text-white">+42</div>
+                  </div>
+                  <div class="text-xs text-gray-400">
+                    <span class="text-green-400 font-bold">94%</span> reativados
+                  </div>
+                </div>
+              </div>
+            </BaseBentoCard>
+
+            <!-- Financeiro Card -->
+            <BaseBentoCard class="md:col-span-2 group relative overflow-hidden">
+              <div class="flex items-start justify-between">
+                <div>
+                  <div class="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center mb-3">
+                    <UIcon name="i-lucide-wallet" class="w-5 h-5 text-emerald-400" />
+                  </div>
+                  <h3 class="text-lg font-bold text-white mb-1">Financeiro</h3>
+                  <p class="text-gray-400 text-xs">Recorrência + NFe automática</p>
+                </div>
+                <div class="text-right">
+                  <div class="text-xs text-gray-500 mb-1">Receita mensal</div>
+                  <div class="text-lg font-bold text-emerald-400">R$ 127k</div>
+                </div>
+              </div>
+            </BaseBentoCard>
+
+            <!-- Acesso Biométrico (spans 2 cols) -->
+            <BaseBentoCard class="md:col-span-2 group relative overflow-hidden">
+              <div class="flex items-center gap-6 h-full">
+                <div class="flex-1">
+                  <h3 class="text-lg font-bold text-white mb-2">Acesso Biométrico</h3>
+                  <p class="text-gray-400 text-xs mb-3">Catracas + Reconhecimento Facial</p>
+                  <div class="flex items-center gap-2">
+                    <span class="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full">Online</span>
+                    <span class="text-xs text-gray-500">2 catracas</span>
+                  </div>
+                </div>
+                <div class="relative">
+                  <div class="w-20 h-20 rounded-full border-2 border-[#ca000d]/30 flex items-center justify-center relative">
+                    <div class="absolute inset-0 rounded-full border-2 border-[#ca000d] border-t-transparent animate-spin-slow"></div>
+                    <div class="w-14 h-14 rounded-full bg-[#ca000d]/10 flex items-center justify-center">
+                      <UIcon name="i-lucide-scan-face" class="w-7 h-7 text-[#ca000d]" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </BaseBentoCard>
+
+            <!-- Streaming Card (spans 2 cols) -->
+            <BaseBentoCard class="md:col-span-2 group relative overflow-hidden bg-gradient-to-br from-purple-900/20 to-transparent">
+              <div class="flex items-center gap-4 h-full">
+                <div class="w-16 h-16 rounded-xl bg-purple-500/20 flex items-center justify-center relative">
+                  <UIcon name="i-lucide-play" class="w-8 h-8 text-purple-400" />
+                  <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                    <div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  </div>
+                </div>
+                <div class="flex-1">
+                  <h3 class="text-lg font-bold text-white mb-1">Rocket Live & VOD</h3>
+                  <p class="text-gray-400 text-xs mb-2">Streaming de aulas integrado</p>
+                  <div class="flex gap-2">
+                    <span class="text-xs text-purple-400">24 aulas ao vivo</span>
+                    <span class="text-xs text-gray-600">•</span>
+                    <span class="text-xs text-gray-400">+200 gravadas</span>
+                  </div>
+                </div>
+              </div>
+            </BaseBentoCard>
+
+            <!-- Gamificação Card (spans 2 cols) -->
+            <BaseBentoCard class="md:col-span-2 group relative overflow-hidden bg-gradient-to-br from-amber-900/20 to-transparent">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <UIcon name="i-lucide-trophy" class="w-5 h-5 text-amber-400" />
+                    <h3 class="text-lg font-bold text-white">Gamificação</h3>
+                  </div>
+                  <p class="text-gray-400 text-xs">Rankings e desafios</p>
+                </div>
+                <div class="flex gap-1">
+                  <div class="w-6 h-6 rounded bg-amber-500/20 flex items-center justify-center">
+                    <span class="text-xs">🥇</span>
+                  </div>
+                  <div class="w-6 h-6 rounded bg-gray-500/20 flex items-center justify-center">
+                    <span class="text-xs">🥈</span>
+                  </div>
+                  <div class="w-6 h-6 rounded bg-orange-700/20 flex items-center justify-center">
+                    <span class="text-xs">🥉</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full w-[75%] bg-gradient-to-r from-amber-500 to-amber-300 rounded-full"></div>
+                </div>
+                <span class="text-xs text-amber-400 font-bold">Nível 12</span>
+              </div>
+            </BaseBentoCard>
+
           </div>
         </UContainer>
       </section>
@@ -358,7 +529,7 @@ useHead({
       <section class="py-24 bg-black relative overflow-hidden">
         <div class="absolute right-0 top-0 w-1/2 h-full bg-gradient-to-l from-[#ca000d]/5 to-transparent pointer-events-none"></div>
         <UContainer class="flex flex-col lg:flex-row items-center gap-16">
-          <div class="lg:w-1/2">
+          <div class="lg:w-1/2 reveal-on-scroll">
             <h2 class="text-3xl font-bold text-white mb-6">Treinos prescritos na velocidade da luz.</h2>
             <div class="space-y-6">
               <div class="flex gap-4">
@@ -379,9 +550,18 @@ useHead({
                   <p class="text-gray-400 text-sm mt-1">Avaliação física integrada que gera gráficos.</p>
                 </div>
               </div>
+              <div class="flex gap-4">
+                <div class="flex-none w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center border border-gray-700">
+                  <UIcon name="i-lucide-brain" class="w-5 h-5 text-[#ca000d]" />
+                </div>
+                <div>
+                  <h4 class="font-bold text-white">AI Coach</h4>
+                  <p class="text-gray-400 text-sm mt-1">Sugestões inteligentes de progressão de carga.</p>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="lg:w-1/2 w-full">
+          <div class="lg:w-1/2 w-full reveal-on-scroll" style="transition-delay: 200ms;">
             <div class="enhanced-card p-2 rounded-3xl border border-gray-800 bg-gray-900/50">
               <div class="grid grid-cols-2 gap-2">
                 <div class="bg-black p-4 rounded-2xl border border-white/5 flex items-center gap-3">
@@ -416,178 +596,188 @@ useHead({
         </UContainer>
       </section>
 
-      <!-- CTA SECTION -->
-      <section class="relative isolate py-24 bg-gradient-to-b from-black to-[#ca000d]/10">
-        <UContainer class="text-center">
-          <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Comece a transformação hoje.
-          </h2>
-          <p class="mt-6 text-lg leading-8 text-gray-300 max-w-2xl mx-auto">
-            Junte-se a mais de 500 academias que modernizaram sua gestão e experiência do aluno com a Rocket Fitness.
-          </p>
-          <div class="mt-10 flex items-center justify-center gap-x-6">
-            <UButton size="lg" label="Falar com Consultor" color="neutral" variant="solid" class="glow-button bg-white text-[#ca000d] font-bold hover:bg-gray-200" to="/contact" />
-            <UButton size="lg" label="Ver planos e preços" variant="link" color="neutral" icon="i-lucide-arrow-right" trailing class="text-white hover:text-[#ca000d] hover:no-underline" />
+      <!-- SECURITY SECTION -->
+      <section id="security" class="py-24 relative reveal-on-scroll">
+        <UContainer>
+          <div class="flex flex-col lg:flex-row items-center gap-16">
+            <!-- Left Content -->
+            <div class="lg:w-1/2">
+              <div class="text-[#ca000d] font-semibold mb-2 tracking-wider text-sm uppercase">Segurança Primeiro</div>
+              <h2 class="text-3xl md:text-5xl font-bold text-white mb-6">Seus dados, protegidos como ouro.</h2>
+              <p class="text-gray-400 text-lg mb-6 leading-relaxed">
+                Utilizamos protocolos de criptografia AES-256 e estamos em total conformidade com a LGPD. Seus dados e os dados dos seus alunos estão sempre protegidos.
+              </p>
+              <ul class="space-y-4 mb-8">
+                <li v-for="item in securityChecklist" :key="item" class="flex items-start gap-3 text-gray-300">
+                  <UIcon name="i-lucide-check" class="w-6 h-6 text-[#ca000d] mt-0.5 flex-shrink-0" />
+                  <span>{{ item }}</span>
+                </li>
+              </ul>
+            </div>
+            
+            <!-- Right Visual -->
+            <div class="lg:w-1/2 w-full">
+              <div class="relative rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/10 p-1">
+                <div class="bg-[#0a0a0a] rounded-xl p-8 overflow-hidden relative group">
+                  <div class="font-mono text-xs text-gray-500 mb-2">// SECURITY PROTOCOL ACTIVE</div>
+                  <div class="space-y-2 mb-8">
+                    <div class="h-2 w-3/4 bg-white/10 rounded"></div>
+                    <div class="h-2 w-1/2 bg-white/10 rounded"></div>
+                    <div class="h-2 w-5/6 bg-[#ca000d]/20 rounded animate-pulse"></div>
+                  </div>
+                  
+                  <div class="flex justify-center py-8">
+                    <div class="relative transition-transform duration-500 group-hover:scale-110">
+                      <div class="absolute inset-0 bg-[#ca000d]/30 blur-2xl rounded-full transition-all duration-500 group-hover:bg-[#ca000d]/50 group-hover:blur-3xl"></div>
+                      <UIcon name="i-lucide-shield-check" class="w-32 h-32 text-[#ca000d] relative z-10" />
+                    </div>
+                  </div>
+                  
+                  <div class="flex justify-between items-center text-xs text-gray-400 mt-4 pt-4 border-t border-white/10">
+                    <span>Status: <span class="text-green-500">SEGURO</span></span>
+                    <span>Enc: AES-256</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </UContainer>
       </section>
 
+      <!-- PRICING SECTION -->
+      <section id="pricing" ref="pricingSection" class="py-24 bg-[#0a0a0a]">
+        <UContainer>
+          <BaseSectionHeader 
+            title="Escolha seu plano" 
+            description="Soluções flexíveis para academias de todos os tamanhos."
+            class="text-center mb-16"
+          />
+
+          <!-- Pricing Cards -->
+          <div class="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-5xl mx-auto mb-20 reveal-on-scroll">
+            <!-- Basic Plan -->
+            <BaseEnhancedCard class="p-8 flex flex-col">
+              <h3 class="text-2xl font-bold text-white mb-2">Academia</h3>
+              <p class="text-gray-400 mb-6 h-10">Para academias em crescimento.</p>
+              <div class="text-5xl font-bold text-white mb-8">R$ 297 <span class="text-xl text-gray-500 font-normal">/mês</span></div>
+              
+              <UButton 
+                block 
+                size="lg" 
+                label="Começar Agora" 
+                variant="outline" 
+                color="neutral" 
+                class="mb-8 border-white/20 text-white hover:bg-white/10"
+                to="/contact"
+              />
+
+              <div class="space-y-4">
+                <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">O QUE ESTÁ INCLUÍDO</p>
+                <ul class="space-y-3 text-sm text-gray-300">
+                  <li v-for="item in basicPlanFeatures" :key="item" class="flex items-center gap-3">
+                    <UIcon name="i-lucide-check" class="w-4 h-4 text-[#ca000d]" />
+                    {{ item }}
+                  </li>
+                </ul>
+              </div>
+            </BaseEnhancedCard>
+
+            <!-- Pro Plan -->
+            <BaseEnhancedCard class="p-8 flex flex-col relative" :featured="true">
+              <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#ca000d] text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg shadow-[#ca000d]/40 uppercase tracking-widest">
+                Recomendado
+              </div>
+              
+              <h3 class="text-2xl font-bold text-white mb-2">Enterprise</h3>
+              <p class="text-gray-400 mb-6 h-10">Para redes e grandes academias.</p>
+              <div class="text-5xl font-bold text-white mb-8">Custom <span class="text-xl text-gray-500 font-normal">/volume</span></div>
+              
+              <UButton 
+                block 
+                size="lg" 
+                label="Falar com Vendas" 
+                color="primary" 
+                class="mb-8 glow-button text-white"
+                to="/contact"
+              />
+
+              <div class="space-y-4">
+                <p class="text-xs font-bold text-[#ca000d] uppercase tracking-wider">TUDO DO ACADEMIA, MAIS:</p>
+                <ul class="space-y-3 text-sm text-white">
+                  <li v-for="(item, index) in proPlanFeatures" :key="item" class="flex items-center gap-3">
+                    <UIcon name="i-lucide-check" class="w-4 h-4 text-[#ca000d]" />
+                    <span :class="{ 'font-bold': index === 0 }">{{ item }}</span>
+                  </li>
+                </ul>
+              </div>
+            </BaseEnhancedCard>
+          </div>
+
+          <!-- Comparison Table -->
+          <div class="max-w-5xl mx-auto rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm overflow-hidden reveal-on-scroll">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse min-w-[600px]">
+                <thead>
+                  <tr class="bg-white/5 border-b border-white/10">
+                    <th class="p-4 md:p-6 text-sm font-semibold text-white w-1/3">Recurso</th>
+                    <th class="p-4 md:p-6 text-sm font-semibold text-white w-1/3 border-l border-white/10 text-center">Academia</th>
+                    <th class="p-4 md:p-6 text-sm font-semibold text-[#ca000d] w-1/3 border-l border-white/10 text-center">Enterprise</th>
+                  </tr>
+                </thead>
+                <tbody class="text-sm text-gray-300">
+                  <tr 
+                    v-for="row in comparisonTable" 
+                    :key="row.feature" 
+                    class="border-b border-white/5 hover:bg-white/5 transition-colors"
+                  >
+                    <td class="p-4 md:p-6 font-medium text-white">{{ row.feature }}</td>
+                    <td class="p-4 md:p-6 border-l border-white/10 text-center" :class="{ 'opacity-30': row.basic === '—' }">{{ row.basic }}</td>
+                    <td class="p-4 md:p-6 border-l border-white/10 text-center" :class="{ 'text-white font-bold': row.proBold, 'text-[#ca000d] font-bold': row.proHighlight }">{{ row.pro }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </UContainer>
+      </section>
+
+      <!-- FAQ SECTION -->
+      <section class="py-24">
+        <UContainer class="max-w-4xl">
+          <FaqSection 
+            :items="faqItems" 
+            description="Tudo o que você precisa saber sobre o Rocket Fitness." 
+          />
+        </UContainer>
+      </section>
+
+      <!-- CTA SECTION -->
+      <BaseCtaSection
+        title="Comece a transformação hoje."
+        description="Junte-se a mais de 500 academias que modernizaram sua gestão e experiência do aluno com a Rocket Fitness."
+        button-label="Falar com Consultor"
+        button-to="/contact"
+        class="reveal-on-scroll"
+      />
+
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-black border-t border-white/10 pt-20 pb-10 relative z-20">
-        <div class="mx-auto max-w-7xl px-6 lg:px-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-                <!-- Brand Column -->
-                <div class="col-span-2 md:col-span-1">
-                    <NuxtLink to="/" class="flex items-center mb-6">
-                        <img src="/logo-rocket.webp" alt="Rocket Logo" class="h-10 w-auto" />
-                    </NuxtLink>
-                    <p class="text-gray-500 text-sm leading-relaxed">
-                        Impulsionando a inovação corporativa através de tecnologia de ponta, segurança e performance.
-                    </p>
-                </div>
-
-                <!-- Soluções Column -->
-                <div>
-                    <h4 class="text-white font-bold mb-4">Soluções</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><NuxtLink to="/services/cloud" class="hover:text-red-500 transition-colors">Cloud Computing</NuxtLink></li>
-                        <li><NuxtLink to="/services/devel" class="hover:text-red-500 transition-colors">Desenvolvimento</NuxtLink></li>
-                        <li><NuxtLink to="/services/fitness" class="hover:text-red-500 transition-colors">Fitness</NuxtLink></li>
-                        <li><NuxtLink to="/services/marketing" class="hover:text-red-500 transition-colors">Marketing</NuxtLink></li>
-                    </ul>
-                </div>
-
-                <!-- Empresa Column -->
-                <div>
-                    <h4 class="text-white font-bold mb-4">Empresa</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><NuxtLink to="/about" class="hover:text-red-500 transition-colors">Sobre Nós</NuxtLink></li>
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Carreiras</NuxtLink></li>
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Blog</NuxtLink></li>
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Imprensa</NuxtLink></li>
-                    </ul>
-                </div>
-
-                <!-- Legal Column -->
-                <div>
-                    <h4 class="text-white font-bold mb-4">Legal</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Privacidade</NuxtLink></li>
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Termos de Uso</NuxtLink></li>
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Compliance</NuxtLink></li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Bottom Section -->
-            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-sm text-gray-500">© 2025 Rocket Enterprise Inc. Todos os direitos reservados.</p>
-                
-                <div class="flex gap-6">
-                    <NuxtLink to="#" class="text-gray-500 hover:text-white transition-colors">
-                        <span class="sr-only">LinkedIn</span>
-                        <UIcon name="i-lucide-linkedin" class="w-5 h-5"/>
-                    </NuxtLink>
-                    <NuxtLink to="#" class="text-gray-500 hover:text-white transition-colors">
-                        <span class="sr-only">Twitter</span>
-                        <UIcon name="i-lucide-twitter" class="w-5 h-5"/>
-                    </NuxtLink>
-                     <NuxtLink to="#" class="text-gray-500 hover:text-white transition-colors">
-                        <span class="sr-only">Instagram</span>
-                        <UIcon name="i-lucide-instagram" class="w-5 h-5"/>
-                    </NuxtLink>
-                </div>
-            </div>
-            
-             <div class="mt-6 text-center">
-                <p class="text-xs text-gray-600 italic">
-                    "Porque dele, e por meio dele, e para ele são todas as coisas. A ele seja a glória para sempre. Amém!" (Rm 11:36)
-                </p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- SLIDEOVER -->
-    <ClientOnly>
-      <USlideover v-model:open="isOpen" side="left" :ui="{ content: '!w-[280px] !max-w-[280px] !flex-none' }">
-        <template #content>
-          <div class="flex flex-col h-full bg-[#0a0a0a] border-r border-white/10 w-full">
-            <div class="flex items-center justify-between p-6 mb-2">
-              <div class="flex items-center">
-                <img src="/logo-rocket.webp" alt="Rocket Logo" class="h-7 w-auto" />
-              </div>
-              <UButton icon="i-lucide-x" color="neutral" variant="ghost" @click="isOpen = false" />
-            </div>
-
-            <div class="flex-1 overflow-y-auto custom-scrollbar space-y-2 px-6">
-              <UAccordion 
-                :items="accordionItems" 
-                :ui="{ 
-                  item: 'pt-0 pb-2 text-sm text-white',
-                  trigger: 'px-3 py-2 text-gray-300 hover:text-white bg-transparent hover:bg-white/5 font-medium w-full justify-start rounded-md mb-1' 
-                }"
-              >
-                <template #services>
-                  <div class="pl-4 mt-1 space-y-1 border-l border-white/10 ml-2">
-                    <NuxtLink 
-                      v-for="item in serviceLinks"
-                      :key="item.label"
-                      :to="item.to"
-                      @click="isOpen = false"
-                      class="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200"
-                    >
-                      <UIcon :name="item.icon" class="w-4 h-4" />
-                      {{ item.label }}
-                    </NuxtLink>
-                  </div>
-                </template>
-
-                <template #navigation>
-                  <div class="pl-4 mt-1 space-y-1 border-l border-white/10 ml-2">
-                    <NuxtLink 
-                      v-for="item in navigationLinks"
-                      :key="item.label"
-                      :to="item.to"
-                      @click="isOpen = false"
-                      class="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200"
-                    >
-                      <UIcon :name="item.icon" class="w-4 h-4" />
-                      {{ item.label }}
-                    </NuxtLink>
-                  </div>
-                </template>
-              </UAccordion>
-            </div>
-
-            <div class="mt-auto p-6 border-t border-white/10 space-y-4">
-              <UButton block size="lg" label="Login" to="/login" color="primary" variant="solid" class="text-white" @click="isOpen = false" />
-            </div>
-          </div>
-        </template>
-      </USlideover>
-    </ClientOnly>
+    <AppFooter />
 
   </div>
 </template>
 
 <style scoped>
-/* === PARTICLES ANIMATION === */
-.particle {
-  position: fixed;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
+/* === GRID PATTERN === */
+.grid-pattern {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+  opacity: 1;
   pointer-events: none;
-  z-index: 0;
-  animation: floatUp linear infinite;
-}
-
-@keyframes floatUp {
-  0% { transform: translateY(0) scale(1); opacity: 0; }
-  20% { opacity: 0.5; }
-  80% { opacity: 0.5; }
-  100% { transform: translateY(-100vh) scale(0.5); opacity: 0; }
 }
 
 /* === FLOATING ELEMENTS === */
@@ -620,22 +810,6 @@ useHead({
   background: radial-gradient(circle at center, rgba(202, 0, 13, 0.15) 0%, transparent 70%);
 }
 
-/* === GRID PATTERN === */
-.grid-pattern {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.05;
-  background-image: 
-    linear-gradient(rgba(202, 0, 13, 0.3) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(202, 0, 13, 0.3) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
-  z-index: -1;
-}
-
 /* === ENHANCED CARD === */
 .enhanced-card {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(202, 0, 13, 0.02) 50%, rgba(255, 255, 255, 0.01) 100%);
@@ -649,22 +823,6 @@ useHead({
   transform: translateY(-10px) scale(1.01);
   box-shadow: 0 20px 50px rgba(202, 0, 13, 0.15);
   border-color: rgba(202, 0, 13, 0.4);
-}
-
-/* === BENTO CARD === */
-.bento-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.bento-card:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(202, 0, 13, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
 }
 
 /* === GLOW BUTTON === */
@@ -694,7 +852,7 @@ useHead({
 }
 
 /* === TEXT GRADIENT === */
-.text-gradient-red {
+.text-gradient {
   background: linear-gradient(to right, #ca000d, #ff4444);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -721,20 +879,5 @@ useHead({
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
-}
-
-/* === CUSTOM SCROLLBAR === */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 2px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #ca000d;
 }
 </style>

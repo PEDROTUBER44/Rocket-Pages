@@ -1,37 +1,7 @@
 <script setup lang="ts">
-// --- Layout State ---
-const isOpen = ref(false);
-
-const items = [
-  { label: "Serviços", to: "/servicos", icon: "i-lucide-briefcase" },
-  { label: "Recursos", to: "/recursos", icon: "i-lucide-book-open" },
-  { label: "Empresas", to: "/empresas", icon: "i-lucide-building-2" },
-  { label: "Sobre Nós", to: "/about", icon: "i-lucide-info" },
-];
-
-// Accordion items para menu mobile cascata
-const accordionItems = [
-  { label: "Serviços", icon: "i-lucide-briefcase", defaultOpen: true, slot: "services" },
-  { label: "Navegação", icon: "i-lucide-compass", slot: "navigation" }
-];
-
-const serviceLinks = [
-  { label: 'Todos os Serviços', icon: 'i-lucide-layers', to: '/servicos' },
-  { label: 'Rocket Cloud', icon: 'i-heroicons-cloud', to: '/services/cloud' },
-  { label: 'Rocket Fitness', icon: 'i-heroicons-heart', to: '/services/fitness' },
-  { label: 'Rocket Devel', icon: 'i-heroicons-code-bracket', to: '/services/devel' },
-  { label: 'Rocket Marketing', icon: 'i-heroicons-rocket-launch', to: '/services/marketing' },
-];
-
-const navigationLinks = [
-  { label: 'Recursos', icon: 'i-lucide-book-open', to: '/recursos' },
-  { label: 'Empresas', icon: 'i-lucide-building-2', to: '/empresas' },
-  { label: 'Sobre Nós', icon: 'i-lucide-info', to: '/about' },
-];
-
 // --- Page Data ---
 const stats = [
-  { value: '+50', label: 'Projetos Entregues' },
+  { value: '+644', label: 'Projetos Entregues' },
   { value: '99.9%', label: 'Uptime Garantido' },
   { value: '24/7', label: 'Suporte Dedicado' },
   { value: 'Mobile', label: '& Web First' },
@@ -55,23 +25,124 @@ const specialties = [
   }
 ];
 
-// --- Background Particles ---
-const particles = ref<{ left: string; size: string; delay: string; duration: string }[]>([]);
+const technologies = [
+  { name: 'Vue.js', icon: 'i-logos-vue' },
+  { name: 'Nuxt', icon: 'i-logos-nuxt-icon' },
+  { name: 'React', icon: 'i-logos-react' },
+  { name: 'Next.js', icon: 'i-logos-nextjs-icon' },
+  { name: 'TypeScript', icon: 'i-logos-typescript-icon' },
+  { name: 'Node.js', icon: 'i-logos-nodejs-icon' },
+  { name: 'Python', icon: 'i-logos-python' },
+  { name: 'Docker', icon: 'i-logos-docker-icon' },
+  { name: 'AWS', icon: 'i-logos-aws' },
+  { name: 'Tailwind CSS', icon: 'i-logos-tailwindcss-icon' },
+  { name: 'PostgreSQL', icon: 'i-logos-postgresql' },
+  { name: 'Redis', icon: 'i-logos-redis' },
+];
+
+const processSteps = [
+  { 
+    num: '01', 
+    title: 'Discovery & Strategy', 
+    desc: 'Imersão no negócio para entender dores e objetivos. Definição de escopo, arquitetura técnica e roadmap do produto.',
+    icon: 'i-lucide-search'
+  },
+  { 
+    num: '02', 
+    title: 'UX/UI Design', 
+    desc: 'Criação de wireframes e protótipos de alta fidelidade, focados na melhor experiência do usuário e conversão.',
+    icon: 'i-lucide-palette'
+  },
+  { 
+    num: '03', 
+    title: 'Agile Development', 
+    desc: 'Desenvolvimento em sprints semanais com entregas contínuas (CI/CD). Código limpo, testado e documentado.',
+    icon: 'i-lucide-code-2'
+  },
+  { 
+    num: '04', 
+    title: 'Launch & Growth', 
+    desc: 'Deploy em ambiente de produção escalável. Monitoramento de performance e sustentação para evolução constante.',
+    icon: 'i-lucide-rocket'
+  }
+];
+
+const trustItems = [
+  {
+    title: 'Código de Elite',
+    desc: 'Não entregamos apenas software que funciona, mas código limpo, manutenível e escalável.',
+    icon: 'i-lucide-award'
+  },
+  {
+    title: 'Comunicação Transparente',
+    desc: 'Acesso direto ao time técnico. Daily meetings opcionais e relatórios semanais de progresso.',
+    icon: 'i-lucide-users'
+  },
+  {
+    title: 'Entrega Rápida',
+    desc: 'Metodologias ágeis e automação de devops para reduzir o time-to-market do seu produto.',
+    icon: 'i-lucide-zap'
+  }
+];
+
+const faqItems = [
+  {
+    label: 'Qual a metodologia de trabalho utilizada?',
+    content: 'Trabalhamos com metodologias ágeis (Scrum/Kanban). Realizamos sprints semanais ou quinzenais, com reuniões de review para garantir que o projeto esteja sempre alinhado com as expectativas.'
+  },
+  {
+    label: 'Vocês dão manutenção em sistemas legados?',
+    content: 'Sim. Possuímos uma equipe especializada em refatoração e modernização de aplicações legadas, garantindo segurança, performance e escalabilidade sem perder as regras de negócio.'
+  },
+  {
+    label: 'Como funciona a propriedade intelectual (IP)?',
+    content: 'Todo o código produzido é 100% propriedade do cliente. Ao final do projeto (ou a qualquer momento solicitado), entregamos os repositórios completos e documentação técnica.'
+  },
+  {
+    label: 'Quais tecnologias vocês utilizam?',
+    content: 'Somos especialistas em JavaScript/TypeScript (React, Vue, Node.js) e Python. Para infraestrutura, trabalhamos principalmente com AWS e Google Cloud, utilizando Docker e Kubernetes.'
+  }
+];
+
+// --- Scroll Logic ---
+const servicesSection = ref<HTMLElement | null>(null);
+
+const scrollToServices = () => {
+  servicesSection.value?.scrollIntoView({ behavior: 'smooth' });
+};
+
+const scrollToResources = () => {
+  document.getElementById('solutions')?.scrollIntoView({ behavior: 'smooth' });
+};
+
+// --- Animations ---
+const setupScrollAnimation = () => {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  
+  document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
+};
 
 onMounted(() => {
-  for (let i = 0; i < 15; i++) {
-    particles.value.push({
-      left: Math.random() * 100 + '%',
-      size: Math.random() * 3 + 1 + 'px',
-      delay: Math.random() * 5 + 's',
-      duration: Math.random() * 10 + 10 + 's'
-    });
-  }
+  setupScrollAnimation();
 });
 
-useHead({
-  title: 'Rocket Devel - Soluções Tecnológicas Sob Medida'
-})
+useAppSeo({
+  title: 'Rocket Devel',
+  description: 'Desenvolvimento de software sob medida, aplicações web de alta performance e sistemas integrados.',
+  image: '/og-devel.png',
+  breadcrumbs: [
+      { name: 'Home', url: 'https://rocketweb.tech' },
+      { name: 'Serviços', url: 'https://rocketweb.tech/servicos' },
+      { name: 'Rocket Devel', url: 'https://rocketweb.tech/services/devel' }
+  ]
+});
 </script>
 
 <template>
@@ -79,51 +150,18 @@ useHead({
     
     <!-- Background Elements -->
     <div class="fixed inset-0 grid-pattern z-0"></div>
-    <div class="floating-element w-96 h-96 top-[-10%] left-[-10%] opacity-40"></div>
-    <div class="floating-element w-64 h-64 bottom-[10%] right-[-5%] opacity-30" style="animation-delay: -5s;"></div>
-    
-    <!-- Particles -->
-    <div class="fixed inset-0 pointer-events-none z-0">
-      <div
-        v-for="(p, i) in particles"
-        :key="i"
-        class="particle"
-        :style="{
-          left: p.left,
-          width: p.size,
-          height: p.size,
-          animationDelay: p.delay,
-          animationDuration: p.duration
-        }"
-      ></div>
-    </div>
+    <div class="fixed top-0 right-0 w-[500px] h-[500px] bg-[#ca000d]/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="fixed bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none"></div>
 
     <!-- HEADER -->
-    <header class="fixed top-0 z-50 w-full border-b border-white/10 bg-[#050505]/80 backdrop-blur-xl">
-      <UContainer class="flex h-16 items-center justify-between gap-3">
-        <div class="flex items-center gap-2 lg:flex-1">
-          <NuxtLink to="/" class="flex items-center hover:opacity-80 transition-opacity">
-            <img src="/logo-rocket.webp" alt="Rocket Logo" class="h-8 w-auto" />
-          </NuxtLink>
-        </div>
-
-        <div class="hidden lg:flex flex-1 justify-center">
-          <UNavigationMenu :items="items" variant="link" class="gap-x-4" />
-        </div>
-
-        <div class="flex items-center justify-end gap-2 lg:flex-1">
-          <UButton label="Login" to="/login" color="primary" variant="solid" class="hidden sm:inline-flex text-white" />
-          <UButton icon="i-lucide-menu" color="neutral" variant="ghost" class="lg:hidden" aria-label="Menu" @click="isOpen = true" />
-        </div>
-      </UContainer>
-    </header>
+    <AppHeader />
 
     <!-- MAIN CONTENT -->
-    <main class="flex-grow relative z-10">
-      
-      <!-- HERO SECTION -->
-      <section class="relative min-h-screen flex items-center pt-20 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-6 relative z-10 grid lg:grid-cols-2 gap-12 items-center">
+    <main class="flex-grow flex flex-col relative z-10">
+      <UContainer class="pt-32 lg:pt-52 pb-24 w-full">
+        
+        <!-- HERO SECTION -->
+        <div class="grid lg:grid-cols-2 gap-12 items-center mb-32">
           <!-- Left Content -->
           <div class="space-y-8">
             <!-- Badge -->
@@ -133,13 +171,13 @@ useHead({
             </div>
             
             <!-- Title -->
-            <h1 class="text-5xl sm:text-7xl font-bold leading-tight">
+            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold leading-tight">
               Transformamos código em <br/>
               <span class="text-gradient">Resultados Reais</span>
             </h1>
             
             <!-- Subtitle -->
-            <p class="text-gray-400 text-lg max-w-lg leading-relaxed">
+            <p class="text-gray-400 text-lg sm:text-xl max-w-lg leading-relaxed">
               Desenvolvimento de software sob medida, aplicações web de alta performance e sistemas integrados. A tecnologia certa para impulsionar o seu negócio.
             </p>
 
@@ -149,26 +187,26 @@ useHead({
                 size="xl" 
                 label="Iniciar Projeto" 
                 color="primary" 
-                class="glow-button text-white"
+                class="glow-button text-white justify-center"
                 icon="i-lucide-arrow-right"
                 trailing
                 to="/contact"
               />
               <UButton 
                 size="xl" 
-                label="Conversar Agora" 
-                variant="outline" 
+                label="Ver Recursos" 
+                variant="ghost" 
                 color="neutral" 
-                icon="i-lucide-message-circle"
-                class="enhanced-card border-white/10 text-white hover:bg-white/5"
-                to="/contact"
+                icon="i-lucide-layers"
+                class="border border-white/10 hover:border-[#ca000d] text-white hover:bg-[#ca000d]/10 justify-center"
+                @click="scrollToResources"
               />
             </div>
           </div>
 
           <!-- Right Content - Code Card -->
           <div class="relative">
-            <div class="enhanced-card p-6 relative z-20 animate-float">
+            <BaseEnhancedCard class="p-6 relative z-20 animate-float" :hoverEffect="false">
               <div class="flex items-center gap-2 mb-4 border-b border-white/10 pb-4">
                 <div class="w-3 h-3 rounded-full bg-red-500"></div>
                 <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
@@ -184,7 +222,7 @@ useHead({
                 <div class="pl-4 text-gray-300">);</div>
                 <div class="text-purple-400">{'}'}</div>
               </div>
-            </div>
+            </BaseEnhancedCard>
             
             <!-- Floating React Icon -->
             <div class="absolute -top-10 -right-10 z-10 opacity-60">
@@ -195,257 +233,384 @@ useHead({
             </div>
           </div>
         </div>
-      </section>
 
-      <!-- STATS SECTION -->
-      <section class="py-10 border-y border-white/5 bg-white/[0.005]">
-        <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div v-for="stat in stats" :key="stat.label" class="text-center group">
-            <div class="text-3xl font-bold text-white mb-1 group-hover:text-[#ca000d] transition-colors">{{ stat.value }}</div>
-            <div class="text-sm text-gray-400">{{ stat.label }}</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- SPECIALTIES SECTION -->
-      <section class="py-24 relative">
-        <div class="max-w-7xl mx-auto px-6">
-          <div class="text-center mb-16">
-            <h2 class="text-3xl sm:text-4xl font-bold mb-4">Nossas Especialidades</h2>
-            <p class="text-gray-400 max-w-2xl mx-auto">
-              Do conceito ao deploy, oferecemos um ciclo completo de desenvolvimento focado na experiência do usuário e na escalabilidade.
-            </p>
-          </div>
-
-          <div class="grid md:grid-cols-3 gap-6">
-            <div 
-              v-for="(specialty, index) in specialties" 
-              :key="index" 
-              class="enhanced-card p-8 group"
-            >
-              <div class="w-12 h-12 bg-[#ca000d]/10 rounded-lg flex items-center justify-center mb-6 group-hover:bg-[#ca000d]/20 transition-colors">
-                <UIcon :name="specialty.icon" class="w-6 h-6 text-[#ca000d]" />
-              </div>
-              <h3 class="text-xl font-bold mb-3 text-white">{{ specialty.title }}</h3>
-              <p class="text-gray-400 text-sm leading-relaxed mb-4">{{ specialty.description }}</p>
-              <NuxtLink to="#" class="text-[#ca000d] text-sm font-semibold hover:text-white transition-colors flex items-center gap-2">
-                Saiba mais <UIcon name="i-lucide-arrow-right" class="w-3 h-3" />
-              </NuxtLink>
+        <!-- STATS SECTION -->
+        <div class="py-10 mb-24 border-y border-white/5 bg-white/[0.02]">
+          <div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-white/10">
+            <div v-for="stat in stats" :key="stat.label" class="flex flex-col items-center justify-center p-4 text-center group transition-colors">
+               <UIcon :name="stat.icon" class="w-6 h-6 text-[#ca000d] mb-3 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all" />
+              <div class="text-3xl font-bold text-white mb-1 group-hover:text-[#ca000d] transition-colors">{{ stat.value }}</div>
+              <div class="text-sm text-gray-400 font-medium group-hover:text-white transition-colors">{{ stat.label }}</div>
             </div>
           </div>
         </div>
-      </section>
 
-      <!-- CTA SECTION -->
-      <section class="py-20 relative overflow-hidden">
-        <div class="absolute inset-0 bg-[#ca000d]/5"></div>
-        <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
-          <UIcon name="i-lucide-rocket" class="w-12 h-12 text-[#ca000d] mx-auto mb-6 animate-bounce" />
-          <h2 class="text-3xl sm:text-4xl font-bold mb-6">Pronto para decolar seu projeto?</h2>
-          <p class="text-gray-300 mb-8 max-w-2xl mx-auto">
-            Não importa a complexidade, a Rocket Devel tem a equipe e a tecnologia certa para entregar. Vamos construir o futuro juntos.
-          </p>
-          <div class="flex justify-center gap-4">
-            <UButton 
-              size="xl" 
-              label="Solicitar Orçamento" 
-              color="primary" 
-              class="glow-button text-white"
-              to="/contact"
-            />
+        <!-- TRUST SECTION (WHY ROCKET) -->
+        <div class="mb-32">
+          <div class="text-center mb-16 reveal-on-scroll">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Por que a Rocket Devel?</h2>
+            <p class="text-gray-400">Excelência técnica e compromisso com o seu resultado.</p>
+          </div>
+
+          <div class="grid md:grid-cols-3 gap-8">
+            <BaseEnhancedCard 
+              v-for="(item, index) in trustItems" 
+              :key="item.title"
+              class="p-8 rounded-2xl group reveal-on-scroll"
+              :style="{ transitionDelay: `${index * 100}ms` }"
+            >
+              <div class="w-12 h-12 bg-[#ca000d]/10 rounded-xl flex items-center justify-center mb-6 border border-[#ca000d]/20 group-hover:border-[#ca000d] transition-colors">
+                <UIcon :name="item.icon" class="w-6 h-6 text-[#ca000d]" />
+              </div>
+              <h3 class="text-xl font-bold text-white mb-3">{{ item.title }}</h3>
+              <p class="text-gray-400 leading-relaxed">{{ item.desc }}</p>
+            </BaseEnhancedCard>
           </div>
         </div>
-      </section>
 
+        <!-- TECH STACK MARQUEE -->
+        <div class="mb-32 overflow-hidden relative">
+          <BaseSectionHeader 
+             title="Tech Stack de Ponta" 
+             description="Dominamos as ferramentas que constroem o futuro da web."
+             class="text-center mb-16"
+          />
+          
+          <div class="relative flex overflow-x-hidden group">
+             <!-- Gradient Masks -->
+             <div class="absolute left-0 top-0 bottom-0 w-24 z-10 bg-gradient-to-r from-[#050505] to-transparent"></div>
+             <div class="absolute right-0 top-0 bottom-0 w-24 z-10 bg-gradient-to-l from-[#050505] to-transparent"></div>
+
+             <div class="py-12 animate-marquee whitespace-nowrap flex gap-16">
+                <!-- Duplicate array for infinite loop -->
+                <div v-for="tech in [...technologies, ...technologies]" :key="tech.name + Math.random()" class="flex items-center gap-4 text-gray-400 hover:text-white transition-colors cursor-default">
+                   <UIcon :name="tech.icon" class="w-10 h-10 grayscale hover:grayscale-0 transition-all duration-300" />
+                   <span class="text-2xl font-bold opacity-50">{{ tech.name }}</span>
+                </div>
+             </div>
+             
+             <div class="absolute top-0 py-12 animate-marquee2 whitespace-nowrap flex gap-16">
+                <div v-for="tech in [...technologies, ...technologies]" :key="tech.name + Math.random() + 'dup'" class="flex items-center gap-4 text-gray-400 hover:text-white transition-colors cursor-default">
+                   <UIcon :name="tech.icon" class="w-10 h-10 grayscale hover:grayscale-0 transition-all duration-300" />
+                   <span class="text-2xl font-bold opacity-50">{{ tech.name }}</span>
+                </div>
+             </div>
+          </div>
+        </div>
+
+        <!-- SPECIALTIES SECTION -->
+        <div id="solutions" class="mb-32 scroll-mt-40">
+          <div class="text-center mb-16 reveal-on-scroll">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Soluções Sob Medida</h2>
+            <p class="text-gray-400">A melhor tecnologia de desenvolvimento para o seu negócio.</p>
+          </div>
+
+          <div class="grid md:grid-cols-3 gap-8">
+            <BaseEnhancedCard 
+              v-for="(specialty, index) in specialties" 
+              :key="index" 
+              class="p-8 rounded-2xl group reveal-on-scroll"
+              :style="{ transitionDelay: `${index * 100}ms` }"
+            >
+              <!-- Icon Container Matching Cloud Page -->
+              <div class="w-12 h-12 bg-[#ca000d]/10 rounded-xl flex items-center justify-center mb-6 border border-[#ca000d]/20 group-hover:border-[#ca000d] transition-colors">
+                <UIcon :name="specialty.icon" class="w-6 h-6 text-[#ca000d]" />
+              </div>
+              <h3 class="text-xl font-bold text-white mb-3">{{ specialty.title }}</h3>
+              <p class="text-gray-400 leading-relaxed">{{ specialty.description }}</p>
+            </BaseEnhancedCard>
+          </div>
+        </div>
+
+        <!-- BENTO ECOSYSTEM -->
+        <div class="mb-32">
+          <BaseSectionHeader 
+            title="Ecossistema de Engenharia" 
+            description="Não apenas escrevemos código, construímos arquiteturas resilientes e preparadas para o futuro."
+            badge="ECOSYSTEM"
+            class="mb-16 text-center"
+          >
+             <template #title>
+                Ecossistema de <span class="text-[#ca000d]">Engenharia</span>
+             </template>
+          </BaseSectionHeader>
+
+          <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-4 auto-rows-[140px] reveal-on-scroll">
+            
+            <!-- Clean Architecture Card (spans 2 cols, 2 rows) -->
+            <BaseBentoCard class="md:col-span-2 md:row-span-2 group relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-br from-[#ca000d]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              <div class="relative z-10 h-full flex flex-col">
+                <div class="flex items-start justify-between mb-4">
+                  <div class="w-12 h-12 bg-gradient-to-br from-[#ca000d] to-[#ff4444] rounded-xl flex items-center justify-center shadow-lg shadow-[#ca000d]/30">
+                    <UIcon name="i-lucide-layers" class="w-6 h-6 text-white" />
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span class="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full">SOLID</span>
+                  </div>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Clean Architecture</h3>
+                <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                  Padrões rigorosos de código. Desacoplamento e testabilidade.
+                </p>
+                <div class="mt-auto flex-1 min-h-[120px] bg-black/40 rounded-xl border border-white/5 overflow-hidden p-4 font-mono text-xs">
+                  <div class="text-gray-500 mb-2">// Domain Layer</div>
+                  <div><span class="text-purple-400">class</span> <span class="text-yellow-400">UseCase</span> <span class="text-gray-500">implements</span> <span class="text-green-400">Executable</span> {'{'}</div>
+                  <div class="pl-4"><span class="text-blue-400">execute</span>(<span class="text-orange-400">input</span>: <span class="text-purple-400">DTO</span>): <span class="text-purple-400">Result</span> {'{'}</div>
+                  <div class="pl-8 text-gray-600">// Business logic...</div>
+                  <div class="pl-4">{'}'}</div>
+                  <div>{'}'}</div>
+                </div>
+              </div>
+            </BaseBentoCard>
+
+            <!-- CI/CD Pipeline Card (spans 2 cols) -->
+            <BaseBentoCard class="md:col-span-2 group relative overflow-hidden">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <UIcon name="i-lucide-git-branch" class="w-5 h-5 text-[#ca000d]" />
+                    <h3 class="text-lg font-bold text-white">CI/CD Pipeline</h3>
+                  </div>
+                  <p class="text-gray-500 text-xs">Deploy automatizado</p>
+                </div>
+                <div class="flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                  <span class="text-xs text-green-400">All passing</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 mt-auto">
+                <div class="flex-1 flex items-center gap-1">
+                  <div class="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
+                    <UIcon name="i-lucide-git-commit" class="w-4 h-4 text-blue-400" />
+                  </div>
+                  <div class="flex-1 h-px bg-green-500"></div>
+                  <div class="w-8 h-8 rounded-lg bg-yellow-500/20 flex items-center justify-center">
+                    <UIcon name="i-lucide-test-tube" class="w-4 h-4 text-yellow-400" />
+                  </div>
+                  <div class="flex-1 h-px bg-green-500"></div>
+                  <div class="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+                    <UIcon name="i-lucide-box" class="w-4 h-4 text-purple-400" />
+                  </div>
+                  <div class="flex-1 h-px bg-green-500"></div>
+                  <div class="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center">
+                    <UIcon name="i-lucide-rocket" class="w-4 h-4 text-green-400" />
+                  </div>
+                </div>
+              </div>
+            </BaseBentoCard>
+
+            <!-- API Integrations Card (spans 2 cols) -->
+            <BaseBentoCard class="md:col-span-2 group relative overflow-hidden">
+              <div class="absolute -right-8 -top-8 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full group-hover:bg-blue-500/20 transition-colors"></div>
+              <div class="relative z-10">
+                <div class="flex items-center gap-2 mb-3">
+                  <UIcon name="i-lucide-plug" class="w-5 h-5 text-blue-400" />
+                  <h3 class="text-lg font-bold text-white">API & Integrações</h3>
+                </div>
+                <p class="text-gray-400 text-xs mb-4">REST, GraphQL, WebSockets</p>
+                <div class="flex items-center justify-between">
+                  <div class="flex -space-x-2">
+                    <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
+                      <UIcon name="i-logos-stripe" class="w-4 h-4" />
+                    </div>
+                    <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
+                      <UIcon name="i-logos-google-icon" class="w-4 h-4" />
+                    </div>
+                    <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center">
+                      <UIcon name="i-logos-aws" class="w-4 h-4" />
+                    </div>
+                    <div class="w-8 h-8 rounded-lg bg-white/10 border border-white/20 flex items-center justify-center text-xs text-gray-400">+12</div>
+                  </div>
+                  <span class="text-xs text-blue-400">50+ conectores</span>
+                </div>
+              </div>
+            </BaseBentoCard>
+
+            <!-- Scalability Card -->
+            <BaseBentoCard class="md:col-span-2 group relative overflow-hidden">
+              <div class="flex items-start justify-between">
+                <div>
+                  <div class="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center mb-3">
+                    <UIcon name="i-lucide-trending-up" class="w-5 h-5 text-emerald-400" />
+                  </div>
+                  <h3 class="text-lg font-bold text-white mb-1">Escalabilidade</h3>
+                  <p class="text-gray-400 text-xs">100 → 1M usuários</p>
+                </div>
+                <div class="text-right">
+                  <div class="text-xs text-gray-500 mb-1">Requests/s</div>
+                  <div class="text-lg font-bold text-emerald-400">50k+</div>
+                </div>
+              </div>
+            </BaseBentoCard>
+
+            <!-- Security Card -->
+            <BaseBentoCard class="md:col-span-2 group relative overflow-hidden bg-gradient-to-br from-purple-900/20 to-transparent">
+              <div class="flex items-center gap-6 h-full">
+                <div class="flex-1">
+                  <h3 class="text-lg font-bold text-white mb-2">Segurança</h3>
+                  <p class="text-gray-400 text-xs mb-3">LGPD + GDPR Compliant</p>
+                  <div class="flex items-center gap-2">
+                    <span class="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded-full">AES-256</span>
+                    <span class="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded-full">TLS 1.3</span>
+                  </div>
+                </div>
+                <div class="relative">
+                  <div class="w-16 h-16 rounded-full bg-purple-500/10 flex items-center justify-center">
+                    <UIcon name="i-lucide-shield-check" class="w-8 h-8 text-purple-400" />
+                  </div>
+                  <div class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                    <UIcon name="i-lucide-check" class="w-3 h-3 text-white" />
+                  </div>
+                </div>
+              </div>
+            </BaseBentoCard>
+
+            <!-- Testing Card (spans 2 cols) -->
+            <BaseBentoCard class="md:col-span-2 group relative overflow-hidden">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <UIcon name="i-lucide-test-tube-2" class="w-5 h-5 text-green-400" />
+                    <h3 class="text-lg font-bold text-white">Testes Automatizados</h3>
+                  </div>
+                  <p class="text-gray-500 text-xs">Unit, Integration, E2E</p>
+                </div>
+                <div class="text-right">
+                  <div class="text-2xl font-bold text-green-400">98%</div>
+                  <div class="text-xs text-gray-500">coverage</div>
+                </div>
+              </div>
+              <div class="flex items-end justify-between gap-1 h-10 mt-auto">
+                <div class="flex-1 bg-green-500/30 rounded-t h-[60%]"></div>
+                <div class="flex-1 bg-green-500/30 rounded-t h-[80%]"></div>
+                <div class="flex-1 bg-green-500/30 rounded-t h-[70%]"></div>
+                <div class="flex-1 bg-green-500/30 rounded-t h-[90%]"></div>
+                <div class="flex-1 bg-green-500/30 rounded-t h-[85%]"></div>
+                <div class="flex-1 bg-green-500 rounded-t h-[98%] shadow-[0_0_15px_rgba(34,197,94,0.5)]"></div>
+              </div>
+            </BaseBentoCard>
+
+            <!-- Database Card (spans 2 cols) -->
+            <BaseBentoCard class="md:col-span-2 group relative overflow-hidden bg-gradient-to-br from-cyan-900/20 to-transparent">
+              <div class="flex items-center gap-4 h-full">
+                <div class="w-14 h-14 rounded-xl bg-cyan-500/20 flex items-center justify-center">
+                  <UIcon name="i-lucide-database" class="w-7 h-7 text-cyan-400" />
+                </div>
+                <div class="flex-1">
+                  <h3 class="text-lg font-bold text-white mb-1">Database Design</h3>
+                  <p class="text-gray-400 text-xs mb-2">SQL, NoSQL, Redis, ElasticSearch</p>
+                  <div class="flex gap-2">
+                    <span class="text-xs text-cyan-400">PostgreSQL</span>
+                    <span class="text-xs text-gray-600">•</span>
+                    <span class="text-xs text-gray-400">MongoDB</span>
+                  </div>
+                </div>
+              </div>
+            </BaseBentoCard>
+
+            <!-- Performance Monitoring Card (spans 2 cols) -->
+            <BaseBentoCard class="md:col-span-2 group relative overflow-hidden bg-gradient-to-br from-amber-900/20 to-transparent">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <UIcon name="i-lucide-activity" class="w-5 h-5 text-amber-400" />
+                    <h3 class="text-lg font-bold text-white">Performance</h3>
+                  </div>
+                  <p class="text-gray-400 text-xs">Monitoramento 24/7</p>
+                </div>
+                <div class="flex gap-2">
+                  <div class="text-center">
+                    <div class="text-lg font-bold text-amber-400">99.9%</div>
+                    <div class="text-[10px] text-gray-500">uptime</div>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <div class="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full w-[99.9%] bg-gradient-to-r from-amber-500 to-green-400 rounded-full"></div>
+                </div>
+                <UIcon name="i-lucide-check-circle" class="w-4 h-4 text-green-400" />
+              </div>
+            </BaseBentoCard>
+
+          </div>
+        </div>
+
+        <!-- PROCESS TIMELINE -->
+        <div class="mb-32">
+           <BaseSectionHeader 
+            title="Nosso Processo" 
+            description="Metodologia ágil e transparente em cada etapa do ciclo de vida do software."
+            class="text-center mb-16"
+          />
+
+          <div class="grid md:grid-cols-4 gap-8 relative">
+             <!-- Connecting Line (Desktop) -->
+             <div class="hidden md:block absolute top-8 left-[10%] right-[10%] h-px bg-white/10 z-0"></div>
+             
+             <!-- Connecting Line (Mobile) -->
+             <div class="md:hidden absolute top-4 bottom-24 left-1/2 w-px bg-white/10 -translate-x-1/2 z-0"></div>
+
+             <div 
+               v-for="(step, index) in processSteps" 
+               :key="index" 
+               class="relative z-10 flex flex-col items-center text-center group reveal-on-scroll"
+               :style="{ transitionDelay: `${index * 150}ms` }"
+             >
+               <div class="w-16 h-16 rounded-full bg-[#0a0a0a] border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:border-[#ca000d] transition-all duration-300 relative">
+                 <UIcon :name="step.icon" class="w-7 h-7 text-white group-hover:text-[#ca000d] transition-colors" />
+                 
+                 <!-- Number Badge -->
+                 <div class="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-[#ca000d] text-white text-xs font-bold flex items-center justify-center border-2 border-[#050505]">
+                   {{ index + 1 }}
+                 </div>
+               </div>
+               
+               <h3 class="text-lg font-bold text-white mb-2">{{ step.title }}</h3>
+               <p class="text-sm text-gray-400 max-w-[200px] leading-relaxed">{{ step.desc }}</p>
+             </div>
+          </div>
+        </div>
+
+        <!-- FAQ SECTION -->
+        <div class="mb-32 max-w-3xl mx-auto">
+             <FaqSection 
+               :items="faqItems" 
+               description="Tudo o que você precisa saber sobre nosso modelo de trabalho."
+             />
+        </div>
+
+        <!-- CTA SECTION -->
+        <BaseCtaSection
+          title="Pronto para decolar seu projeto?"
+          description="Não importa a complexidade, a Rocket Devel tem a equipe e a tecnologia certa para entregar. Vamos construir o futuro juntos."
+          button-label="Solicitar Orçamento"
+          button-to="/contact"
+        />
+
+      </UContainer>
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-black border-t border-white/10 pt-20 pb-10 relative z-20">
-        <div class="mx-auto max-w-7xl px-6 lg:px-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-                <!-- Brand Column -->
-                <div class="col-span-2 md:col-span-1">
-                    <NuxtLink to="/" class="flex items-center mb-6">
-                        <img src="/logo-rocket.webp" alt="Rocket Logo" class="h-10 w-auto" />
-                    </NuxtLink>
-                    <p class="text-gray-500 text-sm leading-relaxed">
-                        Impulsionando a inovação corporativa através de tecnologia de ponta, segurança e performance.
-                    </p>
-                </div>
-
-                <!-- Soluções Column -->
-                <div>
-                    <h4 class="text-white font-bold mb-4">Soluções</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><NuxtLink to="/services/cloud" class="hover:text-red-500 transition-colors">Cloud Computing</NuxtLink></li>
-                        <li><NuxtLink to="/services/devel" class="hover:text-[#ca000d] transition-colors">Desenvolvimento</NuxtLink></li>
-                        <li><NuxtLink to="/services/fitness" class="hover:text-red-500 transition-colors">Fitness</NuxtLink></li>
-                        <li><NuxtLink to="/services/marketing" class="hover:text-red-500 transition-colors">Marketing</NuxtLink></li>
-                    </ul>
-                </div>
-
-                <!-- Empresa Column -->
-                <div>
-                    <h4 class="text-white font-bold mb-4">Empresa</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><NuxtLink to="/about" class="hover:text-red-500 transition-colors">Sobre Nós</NuxtLink></li>
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Carreiras</NuxtLink></li>
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Blog</NuxtLink></li>
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Imprensa</NuxtLink></li>
-                    </ul>
-                </div>
-
-                <!-- Legal Column -->
-                <div>
-                    <h4 class="text-white font-bold mb-4">Legal</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Privacidade</NuxtLink></li>
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Termos de Uso</NuxtLink></li>
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Compliance</NuxtLink></li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Bottom Section -->
-            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-sm text-gray-500">© 2025 Rocket Enterprise Inc. Todos os direitos reservados.</p>
-                
-                <div class="flex gap-6">
-                    <NuxtLink to="#" class="text-gray-500 hover:text-white transition-colors">
-                        <span class="sr-only">LinkedIn</span>
-                        <UIcon name="i-lucide-linkedin" class="w-5 h-5"/>
-                    </NuxtLink>
-                    <NuxtLink to="#" class="text-gray-500 hover:text-white transition-colors">
-                        <span class="sr-only">Twitter</span>
-                        <UIcon name="i-lucide-twitter" class="w-5 h-5"/>
-                    </NuxtLink>
-                     <NuxtLink to="#" class="text-gray-500 hover:text-white transition-colors">
-                        <span class="sr-only">Instagram</span>
-                        <UIcon name="i-lucide-instagram" class="w-5 h-5"/>
-                    </NuxtLink>
-                </div>
-            </div>
-            
-             <div class="mt-6 text-center">
-                <p class="text-xs text-gray-600 italic">
-                    "Porque dele, e por meio dele, e para ele são todas as coisas. A ele seja a glória para sempre. Amém!" (Rm 11:36)
-                </p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- SLIDEOVER -->
-    <ClientOnly>
-      <USlideover v-model:open="isOpen" side="left" :ui="{ content: '!w-[280px] !max-w-[280px] !flex-none' }">
-        <template #content>
-          <div class="flex flex-col h-full bg-[#0a0a0a] border-r border-white/10 w-full">
-            <div class="flex items-center justify-between p-6 mb-2">
-              <div class="flex items-center">
-                <img src="/logo-rocket.webp" alt="Rocket Logo" class="h-7 w-auto" />
-              </div>
-              <UButton icon="i-lucide-x" color="neutral" variant="ghost" @click="isOpen = false" />
-            </div>
-
-            <div class="flex-1 overflow-y-auto custom-scrollbar space-y-2 px-6">
-              <UAccordion 
-                :items="accordionItems" 
-                :ui="{ 
-                  item: 'pt-0 pb-2 text-sm text-white',
-                  trigger: 'px-3 py-2 text-gray-300 hover:text-white bg-transparent hover:bg-white/5 font-medium w-full justify-start rounded-md mb-1' 
-                }"
-              >
-                <template #services>
-                  <div class="pl-4 mt-1 space-y-1 border-l border-white/10 ml-2">
-                    <NuxtLink 
-                      v-for="item in serviceLinks"
-                      :key="item.label"
-                      :to="item.to"
-                      @click="isOpen = false"
-                      class="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200"
-                    >
-                      <UIcon :name="item.icon" class="w-4 h-4" />
-                      {{ item.label }}
-                    </NuxtLink>
-                  </div>
-                </template>
-
-                <template #navigation>
-                  <div class="pl-4 mt-1 space-y-1 border-l border-white/10 ml-2">
-                    <NuxtLink 
-                      v-for="item in navigationLinks"
-                      :key="item.label"
-                      :to="item.to"
-                      @click="isOpen = false"
-                      class="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200"
-                    >
-                      <UIcon :name="item.icon" class="w-4 h-4" />
-                      {{ item.label }}
-                    </NuxtLink>
-                  </div>
-                </template>
-              </UAccordion>
-            </div>
-
-            <div class="mt-auto p-6 border-t border-white/10 space-y-4">
-              <UButton block size="lg" label="Login" to="/login" color="primary" variant="solid" class="text-white" @click="isOpen = false" />
-            </div>
-          </div>
-        </template>
-      </USlideover>
-    </ClientOnly>
+    <AppFooter />
 
   </div>
 </template>
 
 <style scoped>
-/* === GRID PATTERN === */
+/* Unified Grid Pattern */
 .grid-pattern {
-  position: fixed;
-  inset: 0;
-  opacity: 0.04;
-  background-image: linear-gradient(rgba(202, 0, 13, 0.3) 1px, transparent 1px), 
-                  linear-gradient(90deg, rgba(202, 0, 13, 0.3) 1px, transparent 1px);
-  background-size: 50px 50px;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
   mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
   -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* === FLOATING ELEMENTS === */
-.floating-element {
-  position: fixed;
-  border-radius: 50%;
-  background: linear-gradient(45deg, rgba(202, 0, 13, 0.15), rgba(255, 68, 68, 0.05));
-  filter: blur(80px);
-  z-index: 0;
-  animation: float-slow 10s infinite alternate ease-in-out;
+  opacity: 1;
   pointer-events: none;
 }
 
-@keyframes float-slow {
-  0% { transform: translate(0, 0); }
-  100% { transform: translate(30px, 20px); }
-}
-
-/* === ENHANCED CARD === */
-.enhanced-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(202, 0, 13, 0.02) 50%, rgba(255, 255, 255, 0.01) 100%);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  border-radius: 1rem;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.enhanced-card:hover {
-  transform: translateY(-10px) scale(1.01);
-  box-shadow: 0 20px 50px rgba(202, 0, 13, 0.15);
-  border-color: rgba(202, 0, 13, 0.4);
-}
-
-/* === TEXT GRADIENT === */
+/* Text Gradient */
 .text-gradient {
   background: linear-gradient(to right, #ca000d, #ff1f1f);
   -webkit-background-clip: text;
@@ -453,36 +618,7 @@ useHead({
   background-clip: text;
 }
 
-/* === GLOW BUTTON === */
-.glow-button {
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 0 15px rgba(202, 0, 13, 0.3);
-  transition: all 0.3s ease-in-out;
-}
-
-.glow-button:hover {
-  box-shadow: 0 0 25px rgba(202, 0, 13, 0.6);
-}
-
-.glow-button::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transform: skewX(-20deg);
-  transition: 0.5s;
-}
-
-.glow-button:hover::after {
-  left: 150%;
-  transition: 0.7s ease-in-out;
-}
-
-/* === FLOAT ANIMATION === */
+/* Animations */
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
@@ -492,7 +628,6 @@ useHead({
   50% { transform: translateY(-10px); }
 }
 
-/* === SPIN SLOW === */
 .animate-spin-slow {
   animation: spin 10s linear infinite;
 }
@@ -502,35 +637,54 @@ useHead({
   to { transform: rotate(360deg); }
 }
 
-/* === PARTICLES === */
-.particle {
-  position: fixed;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-  animation: floatUp linear infinite;
+/* Marquee Animation */
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}
+.animate-marquee2 {
+  animation: marquee2 25s linear infinite;
 }
 
-@keyframes floatUp {
-  0% { transform: translateY(100vh) scale(1); opacity: 0; }
-  20% { opacity: 0.5; }
-  80% { opacity: 0.3; }
-  100% { transform: translateY(-100px) scale(0.5); opacity: 0; }
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-100%); }
+}
+@keyframes marquee2 {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(0%); }
 }
 
-/* === CUSTOM SCROLLBAR === */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+/* Reveal on Scroll */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 2px;
+
+/* Glow Button Effect */
+.glow-button {
+  position: relative;
+  overflow: hidden;
 }
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #ca000d;
+
+.glow-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+.glow-button:hover::after {
+  transform: translateX(100%);
 }
 </style>

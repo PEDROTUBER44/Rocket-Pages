@@ -1,34 +1,6 @@
 <script setup lang="ts">
 // --- Layout State ---
-const isOpen = ref(false);
-
-// Desktop navigation items
-const items = [
-  { label: "Serviços", to: "/servicos", icon: "i-lucide-briefcase" },
-  { label: "Recursos", to: "/recursos", icon: "i-lucide-book-open" },
-  { label: "Empresas", to: "/empresas", icon: "i-lucide-building-2" },
-  { label: "Sobre Nós", to: "/about", icon: "i-lucide-info" },
-];
-
-// Accordion items para menu mobile cascata
-const accordionItems = [
-  { label: "Serviços", icon: "i-lucide-briefcase", defaultOpen: true, slot: "services" },
-  { label: "Navegação", icon: "i-lucide-compass", slot: "navigation" }
-];
-
-const serviceLinks = [
-  { label: 'Todos os Serviços', icon: 'i-lucide-layers', to: '/servicos' },
-  { label: 'Rocket Cloud', icon: 'i-heroicons-cloud', to: '/services/cloud' },
-  { label: 'Rocket Fitness', icon: 'i-heroicons-heart', to: '/services/fitness' },
-  { label: 'Rocket Devel', icon: 'i-heroicons-code-bracket', to: '/services/devel' },
-  { label: 'Rocket Marketing', icon: 'i-heroicons-rocket-launch', to: '/services/marketing' },
-];
-
-const navigationLinks = [
-  { label: 'Recursos', icon: 'i-lucide-book-open', to: '/recursos' },
-  { label: 'Empresas', icon: 'i-lucide-building-2', to: '/empresas' },
-  { label: 'Sobre Nós', icon: 'i-lucide-info', to: '/about' },
-];
+// Menu logic handled by AppHeader
 
 // --- Services Page Content ---
 const services = [
@@ -38,7 +10,7 @@ const services = [
     icon: 'i-heroicons-heart',
     color: 'text-red-500',
     bg: 'bg-red-500/10',
-    features: ['Wearables Integration', 'Health Analytics', 'Bio-hacking Monitoring'],
+    features: ['Aplicativos de Treino', 'Análise de Saúde', 'Monitoramento Biométrico'],
     link: '/services/fitness'
   },
   {
@@ -47,7 +19,7 @@ const services = [
     icon: 'i-heroicons-cloud',
     color: 'text-blue-500',
     bg: 'bg-blue-500/10',
-    features: ['Multi-cloud Management', 'Serverless Architecture', 'Edge Computing Global'],
+    features: ['Gestão Multi-Cloud', 'Arquitetura Escalável', 'Performance Global'],
     link: '/services/cloud'
   },
   {
@@ -56,7 +28,7 @@ const services = [
     icon: 'i-heroicons-code-bracket',
     color: 'text-green-500',
     bg: 'bg-green-500/10',
-    features: ['High-Performance Web/Mobile', 'System Architecture', 'Legacy Modernization'],
+    features: ['Web e Mobile de Alta Performance', 'Arquitetura de Sistemas', 'Modernização de Legado'],
     link: '/services/devel'
   },
   {
@@ -65,14 +37,69 @@ const services = [
     icon: 'i-heroicons-rocket-launch',
     color: 'text-purple-500',
     bg: 'bg-purple-500/10',
-    features: ['Data-Driven Branding', 'Precision Paid Media', 'CRM & Automation'],
+    features: ['Branding com Dados', 'Tráfego Pago Preciso', 'Automação e CRM'],
     link: '/services/marketing'
   }
 ]
 
-useHead({
-  title: 'Nossos Serviços - Rocket Ecosystem'
+const faqItems = [
+  {
+    label: 'Como funciona o processo de orçamento?',
+    content: 'Após o primeiro contato, agendamos uma reunião de discovery para entender suas necessidades. Em até 48h, enviamos uma proposta técnica e comercial detalhada, sem compromisso.'
+  },
+  {
+    label: 'Vocês atendem empresas de qual porte?',
+    content: 'Atendemos desde startups em estágio inicial (MVP) até grandes corporações que precisam de modernização de legado ou squads dedicados.'
+  },
+  {
+    label: 'Qual o prazo médio de entrega?',
+    content: 'Depende da complexidade. Landing pages e sites institucionais levam de 2 a 4 semanas. Produtos digitais complexos (SaaS, Apps) trabalham com cronogramas de 2 a 6 meses, com entregas parciais a cada sprint.'
+  },
+  {
+    label: 'Oferecem suporte após o lançamento?',
+    content: 'Sim! Oferecemos planos de sustentação, manutenção evolutiva e monitoramento 24/7 para garantir que sua operação nunca pare.'
+  }
+]
+
+useAppSeo({
+  title: 'Nossos Serviços',
+  description: 'Explore o ecossistema Rocket: Fitness, Cloud, Devel e Marketing. Soluções completas para acelerar seu crescimento.',
+  image: '/og-services.png',
+  breadcrumbs: [
+      { name: 'Home', url: 'https://rocketweb.tech' },
+      { name: 'Serviços', url: 'https://rocketweb.tech/servicos' }
+  ]
 })
+
+// Scroll Functionality
+const servicesSection = ref<HTMLElement | null>(null);
+
+const scrollToServices = () => {
+  servicesSection.value?.scrollIntoView({ behavior: 'smooth' });
+};
+
+// --- Scroll Animation (same as index.vue) ---
+const setupScrollAnimation = () => {
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.1
+  };
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+  const elements = document.querySelectorAll('.reveal-on-scroll');
+  elements.forEach(el => observer.observe(el));
+};
+
+onMounted(() => {
+  setupScrollAnimation();
+});
 </script>
 
 <template>
@@ -83,32 +110,14 @@ useHead({
     <div class="fixed top-0 right-0 w-[500px] h-[500px] bg-[#ca000d]/10 rounded-full blur-[120px] pointer-events-none"></div>
     <div class="fixed bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none"></div>
 
-    <!-- HEADER -->
-    <header class="fixed top-0 z-50 w-full border-b border-white/10 bg-[#050505]/80 backdrop-blur-xl">
-      <UContainer class="flex h-16 items-center justify-between gap-3">
-        <div class="flex items-center gap-2 lg:flex-1">
-          <NuxtLink to="/" class="flex items-center hover:opacity-80 transition-opacity">
-            <img src="/logo-rocket.webp" alt="Rocket Logo" class="h-8 w-auto" />
-          </NuxtLink>
-        </div>
-
-        <div class="hidden lg:flex flex-1 justify-center">
-          <UNavigationMenu :items="items" variant="link" class="gap-x-4" />
-        </div>
-
-        <div class="flex items-center justify-end gap-2 lg:flex-1">
-          <UButton label="Login" to="/login" color="primary" variant="solid" class="hidden sm:inline-flex text-white" />
-          <UButton icon="i-lucide-menu" color="neutral" variant="ghost" class="lg:hidden" aria-label="Menu" @click="isOpen = true" />
-        </div>
-      </UContainer>
-    </header>
+    <AppHeader />
 
     <!-- CONTENT -->
     <main class="flex-grow flex flex-col relative z-10">
       <UContainer class="pt-32 lg:pt-52 pb-24 text-center w-full">
         
         <!-- Header -->
-        <div class="max-w-2xl mx-auto space-y-6">
+        <div class="max-w-2xl mx-auto space-y-6 reveal-on-scroll">
           <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight">
             Soluções para acelerar o seu <span class="text-primary">crescimento</span>
           </h1>
@@ -128,16 +137,44 @@ useHead({
               label="Explorar Serviços"
               variant="link"
               color="neutral"
-              icon="i-lucide-arrow-down"
-              trailing
-              to="#servicos"
-              class="text-white hover:no-underline w-full sm:w-auto justify-center"
-            />
+              class="text-white hover:no-underline w-full sm:w-auto justify-center group"
+              @click="scrollToServices"
+            >
+              <template #trailing>
+                <UIcon name="i-lucide-arrow-right" class="w-5 h-5 transition-transform duration-300 group-hover:translate-x-2" />
+              </template>
+            </UButton>
+          </div>
+        </div>
+
+        <!-- Methodology Section (Process) -->
+        <div class="mb-32 mt-24 reveal-on-scroll" style="transition-delay: 100ms;">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
+             <!-- Connecting Line (Desktop) -->
+             <div class="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-white/10 to-transparent z-0"></div>
+
+             <div v-for="(step, i) in [
+                { title: 'Discovery', desc: 'Imersão total no seu negócio para mapear dores e oportunidades.', icon: 'i-heroicons-magnifying-glass' },
+                { title: 'Estratégia', desc: 'Planejamento detalhado, arquitetura e definição de roadmap.', icon: 'i-heroicons-map' },
+                { title: 'Execução', desc: 'Desenvolvimento ágil com sprints semanais e feedbacks constantes.', icon: 'i-heroicons-code-bracket-square' },
+                { title: 'Evolução', desc: 'Lançamento, monitoramento e melhoria contínua do produto.', icon: 'i-heroicons-rocket-launch' }
+             ]" :key="i" class="relative z-10 group">
+                <div class="w-24 h-24 mx-auto bg-[#050505] border border-white/10 rounded-full flex items-center justify-center mb-6 group-hover:border-[#ca000d] group-hover:shadow-[0_0_30px_-5px_rgba(202,0,13,0.3)] transition-all duration-500 relative">
+                   <div class="absolute inset-0 bg-white/5 rounded-full scale-0 group-hover:scale-100 transition-transform duration-500"></div>
+                   <UIcon :name="step.icon" class="w-10 h-10 text-gray-400 group-hover:text-[#ca000d] transition-colors duration-300" />
+                   <div class="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-[#ca000d] flex items-center justify-center text-white font-bold text-sm border-4 border-[#050505]">
+                      {{ i + 1 }}
+                   </div>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-3">{{ step.title }}</h3>
+                <p class="text-gray-400 text-sm">{{ step.desc }}</p>
+             </div>
           </div>
         </div>
 
         <!-- Services Grid -->
-        <div id="servicos" class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-32 mt-20 text-left scroll-mt-24">
+        <!-- Services Grid -->
+        <div id="servicos" ref="servicesSection" class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-32 mt-20 text-left scroll-mt-24 reveal-on-scroll" style="transition-delay: 200ms;">
           <div v-for="(service, index) in services" :key="index" 
                class="group relative enhanced-card p-8 rounded-2xl hover:-translate-y-2 transition-all duration-500">
             
@@ -170,159 +207,42 @@ useHead({
           </div>
         </div>
 
+        <!-- Tech Stack Section -->
+        <div class="mb-32 bg-white/5 rounded-3xl p-10 border border-white/5 relative overflow-hidden reveal-on-scroll" style="transition-delay: 300ms;">
+           <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-[#050505] to-[#050505]"></div>
+           <div class="relative z-10 text-center">
+              <h2 class="text-2xl font-bold text-white mb-8 opacity-80">Stack Tecnológica de Alta Performance</h2>
+              <div class="flex flex-wrap justify-center gap-8 md:gap-12 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+                 <!-- Placeholder Icons - replaced with generic names if specific icons missing, but using standard heroicons/simpleicons naming convention usually implies custom request or svg. Using text/simple representations for reliability if icons not loaded. -->
+                 <!-- Using text representations combined with generic icons to ensure visibility -->
+                 <div v-for="tech in ['Rust', 'Python', 'Node.js', 'Vue.js', 'Nuxt', 'AWS']" :key="tech" class="flex flex-col items-center gap-2 group cursor-default">
+                    <div class="p-3 bg-white/5 rounded-xl group-hover:bg-white/10 transition-colors">
+                        <UIcon name="i-heroicons-cpu-chip" class="w-8 h-8 text-white" />
+                    </div>
+                    <span class="font-semibold text-white/80 group-hover:text-white transition-colors">{{ tech }}</span>
+                 </div>
+              </div>
+           </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <FaqSection :items="faqItems" />
+
         <!-- CTA Section -->
-        <section class="relative rounded-3xl overflow-hidden p-12 md:p-20 text-center border border-white/10">
-          <div class="absolute inset-0 bg-gradient-to-br from-[#ca000d]/20 to-black z-0"></div>
-          <div class="absolute inset-0 grid-pattern opacity-10 z-0"></div>
-          
-          <div class="relative z-10 max-w-3xl mx-auto space-y-8">
-            <h2 class="text-3xl md:text-5xl font-bold text-white">Pronto para transformar seu futuro?</h2>
-            <p class="text-lg text-gray-300">Entre em contato com nossos especialistas e descubra como o ecossistema Rocket pode acelerar seus resultados.</p>
-            
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <UButton
-                class="glow-button py-4 px-10 text-base font-bold bg-[#ca000d] hover:bg-[#b0000b] text-white rounded-full shadow-lg shadow-red-900/20"
-                variant="solid"
-                to="/contact"
-              >
-                Falar com Consultor
-              </UButton>
-            </div>
-          </div>
-        </section>
+        <BaseCtaSection
+          title="Pronto para transformar seu futuro?"
+          description="Entre em contato com nossos especialistas e descubra como o ecossistema Rocket pode acelerar seus resultados."
+          button-label="Falar com Consultor"
+          button-to="/contact"
+          class="reveal-on-scroll"
+          style="transition-delay: 500ms;"
+        />
 
       </UContainer>
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-black border-t border-white/10 pt-20 pb-10 relative z-20">
-        <div class="mx-auto max-w-7xl px-6 lg:px-8">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-                <div class="col-span-2 md:col-span-1">
-                    <NuxtLink to="/" class="flex items-center mb-6">
-                        <img src="/logo-rocket.webp" alt="Rocket Logo" class="h-10 w-auto" />
-                    </NuxtLink>
-                    <p class="text-gray-500 text-sm leading-relaxed">
-                        Impulsionando a inovação corporativa através de tecnologia de ponta, segurança e performance.
-                    </p>
-                </div>
-
-                <div>
-                    <h4 class="text-white font-bold mb-4">Soluções</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><NuxtLink to="/services/cloud" class="hover:text-red-500 transition-colors">Cloud Computing</NuxtLink></li>
-                        <li><NuxtLink to="/services/devel" class="hover:text-red-500 transition-colors">Desenvolvimento</NuxtLink></li>
-                        <li><NuxtLink to="/services/fitness" class="hover:text-red-500 transition-colors">Fitness</NuxtLink></li>
-                        <li><NuxtLink to="/services/marketing" class="hover:text-red-500 transition-colors">Marketing</NuxtLink></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-white font-bold mb-4">Empresa</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><NuxtLink to="/about" class="hover:text-red-500 transition-colors">Sobre Nós</NuxtLink></li>
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Carreiras</NuxtLink></li>
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Blog</NuxtLink></li>
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Imprensa</NuxtLink></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-white font-bold mb-4">Legal</h4>
-                    <ul class="space-y-2 text-sm text-gray-400">
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Privacidade</NuxtLink></li>
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Termos de Uso</NuxtLink></li>
-                        <li><NuxtLink to="#" class="hover:text-red-500 transition-colors">Compliance</NuxtLink></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-sm text-gray-500">© 2025 Rocket Enterprise Inc. Todos os direitos reservados.</p>
-                
-                <div class="flex gap-6">
-                    <NuxtLink to="#" class="text-gray-500 hover:text-white transition-colors">
-                        <span class="sr-only">LinkedIn</span>
-                        <UIcon name="i-lucide-linkedin" class="w-5 h-5"/>
-                    </NuxtLink>
-                    <NuxtLink to="#" class="text-gray-500 hover:text-white transition-colors">
-                        <span class="sr-only">Twitter</span>
-                        <UIcon name="i-lucide-twitter" class="w-5 h-5"/>
-                    </NuxtLink>
-                     <NuxtLink to="#" class="text-gray-500 hover:text-white transition-colors">
-                        <span class="sr-only">Instagram</span>
-                        <UIcon name="i-lucide-instagram" class="w-5 h-5"/>
-                    </NuxtLink>
-                </div>
-            </div>
-            
-             <div class="mt-6 text-center">
-                <p class="text-xs text-gray-600 italic">
-                    "Porque dele, e por meio dele, e para ele são todas as coisas. A ele seja a glória para sempre. Amém!" (Rm 11:36)
-                </p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- SLIDEOVER -->
-    <ClientOnly>
-      <USlideover v-model:open="isOpen" side="left" :ui="{ content: '!w-[280px] !max-w-[280px] !flex-none' }">
-        <template #content>
-          <div class="flex flex-col h-full bg-[#0a0a0a] border-r border-white/10 w-full">
-            <div class="flex items-center justify-between p-6 mb-2">
-              <div class="flex items-center">
-                <img src="/logo-rocket.webp" alt="Rocket Logo" class="h-7 w-auto" />
-              </div>
-              <UButton icon="i-lucide-x" color="neutral" variant="ghost" @click="isOpen = false" />
-            </div>
-
-            <div class="flex-1 overflow-y-auto custom-scrollbar space-y-2 px-6">
-              <UAccordion 
-                :items="accordionItems" 
-                :ui="{ 
-                  item: 'pt-0 pb-2 text-sm text-white',
-                  trigger: 'px-3 py-2 text-gray-300 hover:text-white bg-transparent hover:bg-white/5 font-medium w-full justify-start rounded-md mb-1' 
-                }"
-              >
-                <template #services>
-                  <div class="pl-4 mt-1 space-y-1 border-l border-white/10 ml-2">
-                    <NuxtLink 
-                      v-for="item in serviceLinks"
-                      :key="item.label"
-                      :to="item.to"
-                      @click="isOpen = false"
-                      class="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200"
-                    >
-                      <UIcon :name="item.icon" class="w-4 h-4" />
-                      {{ item.label }}
-                    </NuxtLink>
-                  </div>
-                </template>
-
-                <template #navigation>
-                  <div class="pl-4 mt-1 space-y-1 border-l border-white/10 ml-2">
-                    <NuxtLink 
-                      v-for="item in navigationLinks"
-                      :key="item.label"
-                      :to="item.to"
-                      @click="isOpen = false"
-                      class="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-gray-400 hover:text-white hover:bg-white/5 transition-all duration-200"
-                    >
-                      <UIcon :name="item.icon" class="w-4 h-4" />
-                      {{ item.label }}
-                    </NuxtLink>
-                  </div>
-                </template>
-              </UAccordion>
-            </div>
-
-            <div class="mt-auto p-6 border-t border-white/10 space-y-4">
-              <UButton block size="lg" label="Login" to="/login" color="primary" variant="solid" class="text-white" @click="isOpen = false" />
-            </div>
-          </div>
-        </template>
-      </USlideover>
-    </ClientOnly>
+    <AppFooter />
 
   </div>
 </template>
@@ -384,5 +304,21 @@ useHead({
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
   background: #ca000d;
+}
+
+/* === REVEAL ON SCROLL === */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), 
+              transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0) translateZ(0);
 }
 </style>

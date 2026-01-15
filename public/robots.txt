@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /_nuxt/
+Disallow: /login
+Disallow: /account
+
+Sitemap: https://rocketweb.tech/sitemap.xml

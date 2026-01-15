@@ -7,30 +7,50 @@ const isLogin = ref(true);
 const isCaptchaOpen = ref(false);
 const form = ref();
 
-// --- Background Particles Logic ---
-const particles = ref<{ left: string; size: string; delay: string; duration: string }[]>([]);
+const toast = useToast();
+const { captchaImage, captchaId, fetchCaptcha, isLoading: isLoadingCaptcha } = useCaptcha();
+const { login, register, isLoading: isLoadingAuth } = useAuth();
+
+// --- Scroll Animation (same as about.vue) ---
+const setupScrollAnimation = () => {
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.1
+  };
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+  const elements = document.querySelectorAll('.reveal-on-scroll');
+  elements.forEach(el => observer.observe(el));
+};
 
 onMounted(() => {
-    for (let i = 0; i < 20; i++) {
-        particles.value.push({
-            left: Math.random() * 100 + '%',
-            size: Math.random() * 3 + 1 + 'px',
-            delay: Math.random() * 5 + 's',
-            duration: Math.random() * 10 + 10 + 's'
-        });
-    }
+    setupScrollAnimation();
+    refreshCaptcha();
 });
+
+async function refreshCaptcha() {
+    state.captcha = "";
+    await fetchCaptcha();
+}
 
 // --- Schemas Independentes ---
 const loginCheckSchema = z.object({
-  email: z.string().min(1, "Usuário é obrigatório"),
+  username: z.string().min(1, "Usuário é obrigatório"),
   password: z.string().min(1, "Senha é obrigatória"),
 });
 
+// Reuse same validation logic
 const registerCheckSchema = z
   .object({
     name: z.string().min(1, "Nome completo é obrigatório"),
-    email: z.string().min(1, "Usuário é obrigatório"),
+    username: z.string().min(3, "Usuário deve ter no mínimo 3 caracteres"),
     password: z.string().min(8, "A senha deve ter no mínimo 8 caracteres"),
     confirmPassword: z.string().min(1, "Confirmação de senha é obrigatória"),
   })
@@ -57,22 +77,24 @@ type Schema =
 // --- Estado do Formulário ---
 const state = reactive({
   name: "",
-  email: "",
+  username: "",
   password: "",
   confirmPassword: "",
   captcha: "",
 });
 
 // --- Lógica de Tabs ---
-// Limpa o form ao trocar de aba
 watch(isLogin, () => {
   if (form.value) form.value.clear();
   state.name = "";
-  state.email = "";
+  state.username = "";
   state.password = "";
   state.confirmPassword = "";
   state.captcha = "";
   isCaptchaOpen.value = false;
+  if (isLogin.value) {
+      refreshCaptcha();
+  }
 });
 
 // --- Validação Manual ---
@@ -81,13 +103,19 @@ async function handleLoginClick() {
     ? loginCheckSchema
     : registerCheckSchema;
 
-  const result = currentCheckSchema.safeParse(state);
+  const result = currentCheckSchema.safeParse({
+      name: state.name,
+      username: state.username,
+      password: state.password,
+      confirmPassword: state.confirmPassword
+  });
 
   if (result.success) {
     if (form.value) form.value.clear();
+    if (!captchaImage.value) await refreshCaptcha();
     isCaptchaOpen.value = true;
   } else {
-    const formattedErrors = result.error.errors.map((err) => ({
+    const formattedErrors = result.error.issues.map((err) => ({
       path: err.path[0] as string,
       message: err.message,
     }));
@@ -103,50 +131,65 @@ async function confirmCaptcha() {
   form.value.submit();
 }
 
-function onSubmit(event: FormSubmitEvent<Schema>) {
-  console.log("🚀 SUCESSO! Dados enviados:", event.data);
-  isCaptchaOpen.value = false;
-  // Lógica de redirecionamento aqui
+async function onSubmit(event: FormSubmitEvent<Schema>) {
+  console.log("🚀 Iniciando submissão do formulário...");
+  try {
+    const payload = {
+        ...event.data,
+        captcha_id: captchaId.value,
+        captcha_answer: state.captcha
+    };
+
+    if (isLogin.value) {
+        await login(payload);
+        toast.add({ title: 'Bem-vindo!', color: 'primary' });
+        setTimeout(() => location.href = "/", 1000);
+    } else {
+        await register(payload);
+        toast.add({ title: 'Conta criada! Redirecionando...', color: 'primary' });
+        setTimeout(() => location.reload(), 1500);
+    }
+    isCaptchaOpen.value = false;
+
+  } catch (error: any) {
+    console.error("❌ Erro no login:", error);
+    
+    // Auth composable sets formattedMessage
+    const msg = error.formattedMessage || error.message || "Erro desconhecido";
+    const status = error.response?.status;
+     
+    if (status === 400 && msg.includes("Captcha")) {
+         state.password = "";
+    }
+
+    toast.add({ title: 'Erro', description: msg, color: 'primary' });
+    await refreshCaptcha(); 
+  }
 }
+
+useAppSeo({
+  title: 'Login',
+  description: 'Acesse sua conta Rocket Pages.',
+  index: false
+});
 </script>
 
 <template>
   <UApp>
-    <div class="min-h-screen bg-[#050505] text-gray-100 font-sans relative overflow-hidden flex items-center justify-center p-4">
+    <div class="min-h-screen bg-[#050505] text-white overflow-x-hidden font-sans selection:bg-[#ca000d] selection:text-white relative flex items-center justify-center p-4">
     
-      <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
-          <div class="grid-bg absolute inset-0"></div>
-          <div class="absolute inset-0">
-              <div class="floating-blob blob-neutral top-[-10%] left-[-5%] w-[500px] h-[500px]"></div>
-              <div class="floating-blob blob-white bottom-[-10%] right-[-5%] w-[400px] h-[400px]"></div>
-          </div>
-          <div class="absolute inset-0">
-              <div 
-                  v-for="(p, i) in particles" 
-                  :key="i"
-                  class="particle"
-                  :style="{ 
-                      left: p.left, 
-                      width: p.size, 
-                      height: p.size, 
-                      animationDelay: p.delay, 
-                      animationDuration: p.duration 
-                  }"
-              ></div>
-          </div>
-      </div>
+      <!-- Background Elements -->
+      <div class="fixed inset-0 grid-pattern z-0"></div>
+      <div class="fixed top-0 right-0 w-[500px] h-[500px] bg-[#ca000d]/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div class="fixed bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none"></div>
 
-      <UForm ref="form" :schema="schema" :state="state" @submit="onSubmit" class="relative z-10 w-full max-w-[480px]">
+      <UForm ref="form" :schema="schema" :state="state" @submit="onSubmit" class="relative z-10 w-full max-w-[480px] reveal-on-scroll">
           <UCard
-            class="w-full backdrop-blur-xl bg-[#0a0a0a]/80 border border-white/10 shadow-2xl rounded-3xl overflow-hidden"
+            class="w-full backdrop-blur-xl bg-[#0a0a0a]/80 border border-white/10 shadow-2xl rounded-3xl overflow-hidden bg-transparent ring-0 divide-none"
             :ui="{
-              base: '',
-              background: 'bg-transparent',
-              ring: 'ring-0',
-              divide: 'divide-none',
-              header: { padding: 'p-0' },
-              body: { padding: 'p-8 sm:p-10' },
-              footer: { padding: 'p-0' }
+              header: 'p-0',
+              body: 'p-8 sm:p-10',
+              footer: 'p-0'
             }"
           >
             <div class="flex flex-col items-center justify-center mb-8">
@@ -165,96 +208,27 @@ function onSubmit(event: FormSubmitEvent<Schema>) {
                   size="xl"
                   label="Entrar"
                   :variant="isLogin ? 'solid' : 'ghost'"
-                  :color="isLogin ? 'primary' : 'gray'"
+                  :color="isLogin ? 'primary' : 'neutral'"
                   @click="isLogin = true"
                   class="rounded-xl font-bold transition-all duration-300"
                   :class="isLogin ? 'text-white shadow-lg shadow-primary-500/20' : 'text-gray-400 hover:text-white hover:bg-white/5'"
-                  :ui="{ rounded: 'rounded-xl' }"
                 />
                 <UButton
                   block
                   size="xl"
                   label="Criar Conta"
                   :variant="!isLogin ? 'solid' : 'ghost'"
-                  :color="!isLogin ? 'primary' : 'gray'"
+                  :color="!isLogin ? 'primary' : 'neutral'"
                   @click="isLogin = false"
                   class="rounded-xl font-bold transition-all duration-300"
                   :class="!isLogin ? 'text-white shadow-lg shadow-primary-500/20' : 'text-gray-400 hover:text-white hover:bg-white/5'"
-                  :ui="{ rounded: 'rounded-xl' }"
                 />
             </div>
 
-            <div class="space-y-6">
-              <UFormField v-if="!isLogin" name="name" class="space-y-2">
-                <UInput
-                  v-model="state.name"
-                  placeholder="Nome Completo"
-                  class="w-full"
-                  size="xl"
-                  icon="i-lucide-user"
-                  :ui="{
-                    base: 'bg-white/5 text-white ring-1 ring-white/10 focus:ring-2 focus:ring-primary-500 border-0 placeholder-gray-500',
-                    rounded: 'rounded-2xl',
-                    padding: { xl: 'px-4 py-3' },
-                    icon: { leading: { wrapper: 'text-gray-400' } }
-                  }"
-                />
-              </UFormField>
+            <!-- Extracted Fields Component -->
+            <AuthFormFields :state="state" :is-register="!isLogin" />
 
-              <UFormField name="email" class="space-y-2">
-                <UInput
-                  v-model="state.email"
-                  placeholder="Seu e-mail de acesso"
-                  class="w-full"
-                  size="xl"
-                   icon="i-lucide-at-sign"
-                  :ui="{
-                    base: 'bg-white/5 text-white ring-1 ring-white/10 focus:ring-2 focus:ring-primary-500 border-0 placeholder-gray-500',
-                    rounded: 'rounded-2xl',
-                    padding: { xl: 'px-4 py-3' },
-                    icon: { leading: { wrapper: 'text-gray-400' } }
-                  }"
-                />
-              </UFormField>
-
-              <UFormField name="password" class="space-y-2">
-                <UInput
-                  v-model="state.password"
-                  type="password"
-                  placeholder="Sua senha segura"
-                  class="w-full"
-                  size="xl"
-                   icon="i-lucide-lock"
-                  :ui="{
-                    base: 'bg-white/5 text-white ring-1 ring-white/10 focus:ring-2 focus:ring-primary-500 border-0 placeholder-gray-500',
-                    rounded: 'rounded-2xl',
-                    padding: { xl: 'px-4 py-3' },
-                    icon: { leading: { wrapper: 'text-gray-400' } }
-                  }"
-                />
-              </UFormField>
-
-              <UFormField
-                v-if="!isLogin"
-                name="confirmPassword"
-                class="space-y-2"
-              >
-                <UInput
-                  v-model="state.confirmPassword"
-                  type="password"
-                  placeholder="Confirme sua senha"
-                  class="w-full"
-                  size="xl"
-                   icon="i-lucide-lock-keyhole"
-                  :ui="{
-                    base: 'bg-white/5 text-white ring-1 ring-white/10 focus:ring-2 focus:ring-primary-500 border-0 placeholder-gray-500',
-                    rounded: 'rounded-2xl',
-                    padding: { xl: 'px-4 py-3' },
-                    icon: { leading: { wrapper: 'text-gray-400' } }
-                  }"
-                />
-              </UFormField>
-
+            <div class="space-y-6 mt-6">
               <UButton
                 type="button"
                 block
@@ -273,148 +247,48 @@ function onSubmit(event: FormSubmitEvent<Schema>) {
                 <a href="#" class="text-sm text-gray-500 hover:text-primary-400 transition-colors">Esqueceu sua senha?</a>
             </div>
           </UCard>
+
+          <!-- Extracted Captcha Modal -->
+          <AuthCaptchaModal 
+            v-model="isCaptchaOpen"
+            v-model:code="state.captcha"
+            :captcha-image="captchaImage"
+            :is-loading-captcha="isLoadingCaptcha"
+            :is-loading-submit="isLoadingAuth"
+            @refresh="refreshCaptcha"
+            @confirm="confirmCaptcha"
+          />
+
       </UForm>
-
-        <Teleport to="body">
-          <div
-            v-if="isCaptchaOpen"
-            class="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-0"
-          >
-            <div
-              class="absolute inset-0 bg-[#050505]/90 backdrop-blur-md transition-opacity duration-300"
-              @click="isCaptchaOpen = false"
-            ></div>
-
-            <div
-              class="relative z-[10000] w-full max-w-[380px] bg-[#0c0d0f] rounded-3xl border border-white/10 shadow-2xl overflow-hidden animate-fade-in ring-1 ring-white/5"
-            >
-              <div
-                class="p-5 border-b border-white/5 flex items-center justify-between bg-[#121315]"
-              >
-                <div class="flex items-center gap-3">
-                     <div class="w-8 h-8 rounded-full bg-primary-500/10 flex items-center justify-center">
-                        <UIcon name="i-lucide-shield-check" class="w-5 h-5 text-primary-500" />
-                     </div>
-                    <h3
-                      class="text-sm font-bold text-white uppercase tracking-wider"
-                    >
-                      Verificação
-                    </h3>
-                </div>
-                <UButton
-                  color="neutral"
-                  variant="ghost"
-                  icon="i-heroicons-x-mark-20-solid"
-                  class="-my-1 text-gray-400 hover:text-white"
-                  @click="isCaptchaOpen = false"
-                />
-              </div>
-
-              <div class="p-6 space-y-6">
-                <div
-                  class="rounded-2xl border border-dashed border-white/10 bg-[#08090a] p-5 space-y-4"
-                >
-                  <div
-                    class="flex items-center justify-between text-[11px] font-bold tracking-widest text-gray-500 uppercase"
-                  >
-                    <span>Código de Segurança</span>
-                    <UButton
-                      variant="link"
-                      padded
-                      :ui="{ base: 'p-0 text-primary-500 hover:text-primary-400' }"
-                      class="hover:no-underline font-bold text-[10px] gap-1 transition-colors"
-                    >
-                      Trocar
-                      <UIcon name="i-lucide-refresh-cw" class="w-3 h-3" />
-                    </UButton>
-                  </div>
-
-                  <div
-                    class="bg-white rounded-xl h-24 flex items-center justify-center overflow-hidden border border-gray-800 shadow-inner relative"
-                  >
-                    <div class="absolute inset-0 bg-gray-100 opacity-10" style="background-image: radial-gradient(#000 1px, transparent 1px); background-size: 10px 10px;"></div>
-                    <img
-                      src="/captcha.png"
-                      alt="Captcha"
-                      class="h-full object-contain scale-110 contrast-125 opacity-90 relative z-10"
-                    />
-                  </div>
-
-                  <div class="space-y-2">
-                      <UInput
-                        v-model="state.captcha"
-                        placeholder="DIGITE AQUI"
-                        class="w-full text-center"
-                        size="xl"
-                        :ui="{
-                          base: 'bg-[#121315] border-0 ring-1 ring-white/10 text-center uppercase tracking-[0.5em] placeholder:text-center placeholder:tracking-normal placeholder:text-gray-700 text-white focus:ring-2 focus:ring-primary-500',
-                          rounded: 'rounded-xl',
-                          padding: { xl: 'px-4 py-3' }
-                        }"
-                      />
-                  </div>
-                </div>
-
-                <UButton
-                  block
-                  size="xl"
-                  label="Confirmar Acesso"
-                  color="primary"
-                  variant="solid"
-                  class="rounded-2xl font-bold text-white shadow-lg shadow-primary-500/20"
-                  @click="confirmCaptcha"
-                />
-              </div>
-            </div>
-          </div>
-        </Teleport>
     </div>
   </UApp>
 </template>
 
 <style scoped>
-/* --- Background Animation Styles --- */
-.grid-bg {
-    background-size: 50px 50px;
-    background-image: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-    mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+/* === Background Grid Pattern === */
+.grid-pattern {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
+  opacity: 1;
+  pointer-events: none;
 }
 
-.floating-blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    animation: float-slow 10s infinite ease-in-out;
+/* === REVEAL ON SCROLL === */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), 
+              transform 1s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
-.blob-neutral { background: rgba(40, 40, 40, 0.3); }
-.blob-white { background: rgba(255, 255, 255, 0.05); }
-
-.particle {
-    position: absolute;
-    background: white;
-    border-radius: 50%;
-    opacity: 0.1;
-    bottom: -10px;
-    animation: rise linear infinite;
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0) translateZ(0);
 }
-
-@keyframes float-slow {
-    0%, 100% { transform: translate(0, 0); }
-    50% { transform: translate(-20px, 30px); }
-}
-
-@keyframes rise {
-    0% { transform: translateY(0) scale(1); opacity: 0; }
-    50% { opacity: 0.3; }
-    100% { transform: translateY(-100vh) scale(0); opacity: 0; }
-}
-
-@keyframes fade-in {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-.animate-fade-in { animation: fade-in 0.2s ease-out; }
 </style>
