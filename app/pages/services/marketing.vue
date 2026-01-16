@@ -134,21 +134,8 @@ const faqItems = [
   }
 ];
 
-// --- Animation Setup ---
-const setupScrollAnimation = () => {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1 });
-  
-  document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
-};
-
-
+// --- Animation Setup (SSR-Friendly) ---
+const { setupScrollAnimation } = useScrollReveal();
 
 const scrollToCases = () => {
   document.getElementById('solucoes')?.scrollIntoView({ behavior: 'smooth' });
@@ -724,95 +711,17 @@ useAppSeo({
 </template>
 
 <style scoped>
-/* === GRID PATTERN === */
-.grid-pattern {
-  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-  opacity: 1;
-  pointer-events: none;
+/* === PAGE-SPECIFIC STYLES === */
+/* All common styles (grid-pattern, text-gradient, glow-button, glass-panel,
+   animations, marquee, etc.) are now in main.css */
+
+/* Bounce-small animation specific to this page */
+@keyframes bounce-small {
+  0%, 100% { transform: translateY(0) translateX(-50%); }
+  50% { transform: translateY(-4px) translateX(-50%); }
 }
 
-/* === GLASS PANEL === */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-/* === TEXT GRADIENT === */
-.text-gradient {
-  background: linear-gradient(to right, #ca000d, #ff1f1f);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* === GLOW BUTTON === */
-.glow-button {
-  box-shadow: 0 0 20px rgba(202, 0, 13, 0.4);
-  transition: all 0.3s ease;
-}
-.glow-button:hover {
-  box-shadow: 0 0 35px rgba(202, 0, 13, 0.7);
-  transform: scale(1.02);
-}
-
-/* === ANIMATIONS === */
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-.animate-float-delayed {
-  animation: float 6s ease-in-out infinite;
-  animation-delay: 2s;
-}
-.animate-float-slow {
-  animation: float 8s ease-in-out infinite;
-  animation-delay: 1s;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
-}
-
-.reveal-on-scroll {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.reveal-on-scroll.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Marquee Animation */
-.animate-marquee {
-  animation: marquee 25s linear infinite;
-}
-.animate-marquee2 {
-  animation: marquee2 25s linear infinite;
-}
-
-@keyframes marquee {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-100%); }
-}
-@keyframes marquee2 {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(0%); }
-}
-
-/* === SPIN SLOW === */
-.animate-spin-slow {
-  animation: spin 10s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.animate-bounce-small {
+  animation: bounce-small 1s ease-in-out infinite;
 }
 </style>

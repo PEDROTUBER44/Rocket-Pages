@@ -30,6 +30,13 @@ const sanitizedItems = computed(() => {
 
 onMounted(() => {
   if (!rootEl.value) return;
+  
+  // Add will-animate class first to prepare for animation
+  rootEl.value.classList.add('will-animate');
+  
+  // Force reflow
+  void document.body.offsetHeight;
+  
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -74,7 +81,13 @@ onMounted(() => {
 </template>
 
 <style scoped>
+/* SSR-friendly: Content visible by default */
 .faq-reveal-on-scroll {
+  /* Base state: visible content */
+}
+
+/* When JS adds 'will-animate', prepare for animation */
+.faq-reveal-on-scroll.will-animate {
   opacity: 0;
   transform: translateY(40px);
   transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), 
@@ -84,8 +97,9 @@ onMounted(() => {
   -webkit-backface-visibility: hidden;
 }
 
-.faq-reveal-on-scroll.is-visible {
+.faq-reveal-on-scroll.will-animate.is-visible {
   opacity: 1;
   transform: translateY(0) translateZ(0);
 }
 </style>
+

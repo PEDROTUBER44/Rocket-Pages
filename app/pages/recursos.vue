@@ -1,24 +1,8 @@
 <script setup lang="ts">
 // Menu logic handled by AppHeader
 
-// --- Scroll Animation (same as servicos.vue) ---
-const setupScrollAnimation = () => {
-  const observerOptions = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0.1
-  };
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, observerOptions);
-  const elements = document.querySelectorAll('.reveal-on-scroll');
-  elements.forEach(el => observer.observe(el));
-};
+// --- Scroll Animation (SSR-friendly) ---
+const { setupScrollAnimation } = useScrollReveal();
 
 onMounted(() => {
   setupScrollAnimation();
@@ -455,21 +439,7 @@ useAppSeo({
   pointer-events: none;
 }
 
-/* === REVEAL ON SCROLL === */
-.reveal-on-scroll {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), 
-              transform 1s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
-.reveal-on-scroll.is-visible {
-  opacity: 1;
-  transform: translateY(0) translateZ(0);
-}
+/* reveal-on-scroll styles are now in global CSS (main.css) */
 
 /* === New Styles for Recursos === */
 .enhanced-card {

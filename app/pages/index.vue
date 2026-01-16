@@ -101,24 +101,8 @@ const techStack = [
   { name: 'PostgreSQL', icon: 'i-logos-postgresql' },
 ];
 
-// --- Scroll Animation ---
-const setupScrollAnimation = () => {
-  const observerOptions = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0.1
-  };
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, observerOptions);
-  const elements = document.querySelectorAll('.reveal-on-scroll');
-  elements.forEach(el => observer.observe(el));
-};
+// --- Scroll Animation (SSR-friendly) ---
+const { setupScrollAnimation } = useScrollReveal();
 
 onMounted(() => {
     startAutoplay();
@@ -608,7 +592,13 @@ useAppSeo({
 }
 
 /* === REVEAL ON SCROLL === */
+/* Content visible by default for fast SSR rendering */
 .reveal-on-scroll {
+  /* No opacity:0 or transform here - content is visible immediately */
+}
+
+/* When JS adds will-animate, prepare for animation */
+.reveal-on-scroll.will-animate {
   opacity: 0;
   transform: translateY(40px);
   transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1), 
@@ -618,7 +608,8 @@ useAppSeo({
   -webkit-backface-visibility: hidden;
 }
 
-.reveal-on-scroll.is-visible {
+/* When element becomes visible via IntersectionObserver */
+.reveal-on-scroll.will-animate.is-visible {
   opacity: 1;
   transform: translateY(0) translateZ(0);
 }

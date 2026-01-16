@@ -176,8 +176,11 @@ const accordionItems = computed(() => {
     { label: "Recursos", icon: "i-lucide-box", slot: "resources" }
   ];
   
-  // Adicionar seção Admin apenas se usuário tiver role apropriada
-  if (user.value?.roles?.includes('rocket_contact_admin')) {
+  // Adicionar seção Admin se usuário tiver qualquer role de admin
+  const hasAdminRole = user.value?.roles?.some((r: string) => 
+    ['rocket_contact_admin', 'rocket_fitness_admin'].includes(r)
+  );
+  if (hasAdminRole) {
     items.push({ label: "Administração", icon: "i-lucide-shield", slot: "admin" });
   }
   
@@ -200,9 +203,22 @@ const resourceLinks = [
 ];
 
 // Links de administração (visíveis apenas para admins)
-const adminLinks = [
-    { label: 'Gerenciar Contatos', icon: 'i-lucide-mail', to: '/admin/contacts' },
-];
+const adminLinks = computed(() => {
+  const links = [];
+  
+  if (user.value?.roles?.includes('rocket_contact_admin')) {
+    links.push({ label: 'Gerenciar Contatos', icon: 'i-lucide-mail', to: '/admin/contacts' });
+  }
+  
+  if (user.value?.roles?.includes('rocket_fitness_admin')) {
+    links.push(
+      { label: 'Gerenciar Exercícios', icon: 'i-lucide-dumbbell', to: '/admin/fitness/exercises' },
+      { label: 'Dados Auxiliares', icon: 'i-lucide-database', to: '/admin/fitness/auxiliary' }
+    );
+  }
+  
+  return links;
+});
 </script>
 
 <template>

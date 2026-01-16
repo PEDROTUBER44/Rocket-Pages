@@ -85,19 +85,8 @@ const faqItems = [
   }
 ];
 
-// --- Scroll Animation ---
-const setupScrollAnimation = () => {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1 });
-  
-  document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
-};
+// --- Scroll Animation (SSR-Friendly) ---
+const { setupScrollAnimation } = useScrollReveal();
 
 onMounted(() => {
   setupScrollAnimation();
@@ -574,105 +563,11 @@ useAppSeo({
 </template>
 
 <style scoped>
-/* === GRID PATTERN === */
-.grid-pattern {
-  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-  opacity: 1;
-  pointer-events: none;
-}
+/* === PAGE-SPECIFIC STYLES === */
+/* All common styles (grid-pattern, text-gradient, glow-button, enhanced-card, 
+   floating-element, animations, etc.) are now in main.css */
 
-/* === ENHANCED CARD === */
-.enhanced-card {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(202, 0, 13, 0.02) 50%, rgba(255, 255, 255, 0.01) 100%);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.enhanced-card:hover {
-  transform: translateY(-10px) scale(1.01);
-  box-shadow: 0 20px 50px rgba(202, 0, 13, 0.15);
-  border-color: rgba(202, 0, 13, 0.4);
-}
-
-
-
-/* === TEXT GRADIENT === */
-.text-gradient {
-  background: linear-gradient(to right, #ca000d, #ff1f1f);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* === GLOW BUTTON === */
-.glow-button {
-  position: relative;
-  overflow: hidden;
-}
-
-.glow-button::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 200%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.6s ease;
-}
-
-.glow-button:hover::after {
-  transform: translateX(100%);
-}
-
-/* === FLOAT ANIMATION === */
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-/* === FLOATING ELEMENTS === */
-.floating-element {
-  position: absolute;
-  border-radius: 50%;
-  background: linear-gradient(45deg, rgba(202, 0, 13, 0.15), rgba(255, 68, 68, 0.05));
-  animation: float-slow 20s ease-in-out infinite;
-  filter: blur(40px);
-  z-index: 0;
-}
-
-@keyframes float-slow {
-  0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
-  25% { transform: translateY(-30px) translateX(20px) rotate(5deg); }
-  50% { transform: translateY(20px) translateX(-15px) rotate(-3deg); }
-  75% { transform: translateY(-10px) translateX(25px) rotate(7deg); }
-}
-
-.animate-float-slow {
-  animation: float-slow 6s ease-in-out infinite;
-}
-
-.animate-float-alt {
-  animation: float-slow 8s ease-in-out infinite;
-}
-
-/* === HERO GLOW === */
-.hero-glow {
-  background: radial-gradient(circle at center, rgba(202, 0, 13, 0.15) 0%, transparent 70%);
-}
-
-/* === PARTICLES === */
+/* Particles animation (specific to this page) */
 .particle {
   position: fixed;
   background: rgba(255, 255, 255, 0.1);
@@ -689,52 +584,11 @@ useAppSeo({
   100% { transform: translateY(-100px) scale(0.5); opacity: 0; }
 }
 
-/* === CUSTOM SCROLLBAR === */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #333;
-  border-radius: 2px;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #ca000d;
-}
-
-/* === SPIN SLOW === */
-.animate-spin-slow {
-  animation: spin 8s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes float-vertical {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
-}
-
+/* Mobile adjustments */
 @media (max-width: 640px) {
   .animate-float-slow, .animate-float-alt {
-    animation-name: float-vertical !important;
+    animation-name: float !important;
     animation-duration: 4s !important;
   }
-}
-
-/* === REVEAL ON SCROLL === */
-.reveal-on-scroll {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.reveal-on-scroll.is-visible {
-  opacity: 1;
-  transform: translateY(0);
 }
 </style>

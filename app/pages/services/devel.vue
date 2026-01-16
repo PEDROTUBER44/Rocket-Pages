@@ -115,19 +115,8 @@ const scrollToResources = () => {
   document.getElementById('solutions')?.scrollIntoView({ behavior: 'smooth' });
 };
 
-// --- Animations ---
-const setupScrollAnimation = () => {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1 });
-  
-  document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
-};
+// --- Animations (SSR-Friendly) ---
+const { setupScrollAnimation } = useScrollReveal();
 
 onMounted(() => {
   setupScrollAnimation();
@@ -599,92 +588,9 @@ useAppSeo({
 </template>
 
 <style scoped>
-/* Unified Grid Pattern */
-.grid-pattern {
-  background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
-  opacity: 1;
-  pointer-events: none;
-}
+/* === PAGE-SPECIFIC STYLES === */
+/* All common styles (grid-pattern, text-gradient, glow-button, animations, 
+   marquee, etc.) are now in main.css */
 
-/* Text Gradient */
-.text-gradient {
-  background: linear-gradient(to right, #ca000d, #ff1f1f);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Animations */
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-.animate-spin-slow {
-  animation: spin 10s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-/* Marquee Animation */
-.animate-marquee {
-  animation: marquee 25s linear infinite;
-}
-.animate-marquee2 {
-  animation: marquee2 25s linear infinite;
-}
-
-@keyframes marquee {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-100%); }
-}
-@keyframes marquee2 {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(0%); }
-}
-
-/* Reveal on Scroll */
-.reveal-on-scroll {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.reveal-on-scroll.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Glow Button Effect */
-.glow-button {
-  position: relative;
-  overflow: hidden;
-}
-
-.glow-button::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 200%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.6s ease;
-}
-
-.glow-button:hover::after {
-  transform: translateX(100%);
-}
+/* No page-specific styles needed */
 </style>
