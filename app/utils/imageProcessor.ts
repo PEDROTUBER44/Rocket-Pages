@@ -194,3 +194,79 @@ export async function processWideImage(imageFile: File | Blob): Promise<Blob> {
         throw error;
     }
 }
+
+/**
+ * Processa imagem para exercícios fitness:
+ * - Redimensiona para max 1024px mantendo proporção
+ * - Converte para AVIF (ou WebP fallback)
+ * - Aplica compressão de 60%
+ * - Aplica filtro de nitidez
+ */
+export async function processExerciseImage(imageFile: File | Blob): Promise<Blob> {
+    console.time("Processamento Exercise");
+    try {
+        // Se já é AVIF e pequeno, retorna sem processar
+        if (imageFile instanceof File && imageFile.type === 'image/avif' && imageFile.size < 500 * 1024) {
+            console.log("✅ Imagem AVIF pequena, enviando sem processamento.");
+            console.timeEnd("Processamento Exercise");
+            return imageFile;
+        }
+
+        const img = await loadImage(imageFile);
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        if (!ctx) throw new Error("Contexto 2D não disponível.");
+
+        // Calcula novas dimensões mantendo proporção (max 1024px)
+        const maxSize = 1024;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxSize || height > maxSize) {
+            if (width > height) {
+                height = Math.round((height * maxSize) / width);
+                width = maxSize;
+            } else {
+                width = Math.round((width * maxSize) / height);
+                height = maxSize;
+            }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Desenha com alta qualidade de interpolação
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Aplica leve nitidez para compensar redimensionamento
+        applySharpnessFilter(canvas, 0.15);
+
+        // Converte para AVIF/WebP com 60% de qualidade
+        const result = await optimizeCanvas(canvas);
+
+        console.log(`📸 Imagem processada: ${img.width}x${img.height} → ${width}x${height}, ${(result.size / 1024).toFixed(1)}KB`);
+        console.timeEnd("Processamento Exercise");
+        return result;
+    } catch (error) {
+        console.error("Erro no processamento de exercício:", error);
+        throw error;
+    }
+}
+
+/**
+ * Verifica se o arquivo é uma imagem válida
+ */
+export function isValidImageFile(file: File): boolean {
+    const validTypes = [
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+        'image/avif',
+        'image/gif',
+        'image/bmp'
+    ];
+    return validTypes.includes(file.type);
+}
+

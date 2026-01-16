@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { processExerciseImage, isValidImageFile } from '~/utils/imageProcessor';
+
 const toast = useToast();
 const { user, fetchUser } = useAuth();
 const csrfCookie = useCsrfCookie();
@@ -46,8 +48,9 @@ const formData = reactive({
 });
 
 // Image upload
-const imageFile = ref<File | null>(null);
+const imageFile = ref<Blob | null>(null);
 const imagePreview = ref<string | null>(null);
+const isProcessingImage = ref(false);
 
 // Options
 const difficultyOptions = [
@@ -272,11 +275,59 @@ function removeInstruction(index: number) {
   });
 }
 
-function handleImageSelect(event: Event) {
+async function handleImageSelect(event: Event) {
   const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
-    imageFile.value = input.files[0];
-    imagePreview.value = URL.createObjectURL(input.files[0]);
+  if (!input.files || input.files.length === 0) return;
+
+  const file = input.files[0];
+
+  // Valida tipo de arquivo
+  if (!isValidImageFile(file)) {
+    toast.add({ 
+      title: 'Formato inválido', 
+      description: 'Use: JPEG, PNG, WebP, AVIF ou GIF', 
+      color: 'neutral' 
+    });
+    input.value = '';
+    return;
+  }
+
+  // Valida tamanho máximo (10MB para arquivo original)
+  if (file.size > 10 * 1024 * 1024) {
+    toast.add({ 
+      title: 'Arquivo muito grande', 
+      description: 'O arquivo deve ter no máximo 10MB', 
+      color: 'neutral' 
+    });
+    input.value = '';
+    return;
+  }
+
+  // Processa a imagem
+  isProcessingImage.value = true;
+  try {
+    const processedBlob = await processExerciseImage(file);
+    imageFile.value = processedBlob;
+    imagePreview.value = URL.createObjectURL(processedBlob);
+    
+    // Feedback de sucesso
+    const originalSizeKB = (file.size / 1024).toFixed(0);
+    const processedSizeKB = (processedBlob.size / 1024).toFixed(0);
+    toast.add({ 
+      title: 'Imagem processada!', 
+      description: `${originalSizeKB}KB → ${processedSizeKB}KB (${processedBlob.type.split('/')[1].toUpperCase()})`, 
+      color: 'primary' 
+    });
+  } catch (error) {
+    console.error('Erro ao processar imagem:', error);
+    toast.add({ 
+      title: 'Erro ao processar', 
+      description: 'Não foi possível processar esta imagem', 
+      color: 'neutral' 
+    });
+    input.value = '';
+  } finally {
+    isProcessingImage.value = false;
   }
 }
 
@@ -808,18 +859,25 @@ useAppSeo({
               <div>
                 <label class="text-xs text-gray-500 mb-2 block">Imagem do Exercício</label>
                 <div class="flex items-start gap-4">
-                  <div class="w-24 h-24 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+                  <div class="w-24 h-24 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden relative">
                     <img v-if="imagePreview" :src="imagePreview" class="w-full h-full object-cover" />
                     <UIcon v-else name="i-lucide-image" class="w-8 h-8 text-gray-500" />
+                    <!-- Processing overlay -->
+                    <div v-if="isProcessingImage" class="absolute inset-0 bg-black/70 flex items-center justify-center">
+                      <div class="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+                    </div>
                   </div>
-                  <div>
+                  <div class="flex-1">
                     <input 
                       type="file" 
-                      accept="image/*" 
+                      accept="image/jpeg,image/png,image/webp,image/avif,image/gif" 
+                      :disabled="isProcessingImage"
                       @change="handleImageSelect"
-                      class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-500/20 file:text-primary-400 hover:file:bg-primary-500/30 cursor-pointer"
+                      class="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-500/20 file:text-primary-400 hover:file:bg-primary-500/30 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     />
-                    <p class="text-xs text-gray-500 mt-2">Formatos suportados: AVIF, WebP. Max 2MB</p>
+                    <p class="text-xs text-gray-500 mt-2">
+                      {{ isProcessingImage ? 'Processando imagem...' : 'Qualquer formato. Será otimizado para AVIF (max 1024px, 60% qualidade)' }}
+                    </p>
                   </div>
                 </div>
               </div>
