@@ -289,19 +289,17 @@ const inputUiStyle = {
                   </div>
 
                   <UFormGroup name="tipoContato" label="Assunto" :ui="{ wrapper: 'space-y-1', label: { base: 'text-gray-400 text-sm font-medium ml-1' } }">
-                    <USelectMenu
+                    <USelect
                       v-model="form.tipoContato"
-                      :options="tiposContato"
-                      value-attribute="value"
-                      option-attribute="label"
+                      :items="tiposContato"
+                      value-key="value"
+                      label-key="label"
                       placeholder="Selecione uma opção"
-                      :searchable="false"
                       size="lg"
                       class="w-full"
                       :ui="{
                         base: inputUiStyle.base,
-                        rounded: inputUiStyle.rounded,
-                        padding: { sm: 'p-3' }
+                        rounded: inputUiStyle.rounded
                       }"
                     />
                   </UFormGroup>
