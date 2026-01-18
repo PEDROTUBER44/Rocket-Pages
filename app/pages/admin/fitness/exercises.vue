@@ -885,35 +885,85 @@ useAppSeo({
               <!-- Muscles -->
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label class="text-xs text-gray-500 mb-1 block">Músculos Primários *</label>
-                  <select 
-                    v-model="formData.primary_muscles" 
-                    multiple
-                    class="block w-full h-32 rounded-lg bg-white/5 border border-white/10 text-white p-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-                  >
-                    <option v-for="m in muscles" :key="m.id" :value="m.id" class="bg-[#0c0d0f] py-1">{{ m.name }}</option>
-                  </select>
-                  <p class="text-xs text-gray-500 mt-1">Ctrl/Cmd + click para múltiplos</p>
+                  <label class="text-xs text-gray-500 mb-1 block">Músculos Primários * ({{ formData.primary_muscles.length }} selecionados)</label>
+                  <div class="h-32 overflow-y-auto rounded-lg bg-white/5 border border-white/10 p-2 space-y-1 custom-scrollbar">
+                    <label 
+                      v-for="m in muscles" 
+                      :key="'primary-' + m.id" 
+                      class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-white/10 cursor-pointer transition-colors"
+                      :class="{ 'bg-primary-500/20': formData.primary_muscles.includes(m.id) }"
+                    >
+                      <input 
+                        type="checkbox" 
+                        :value="m.id"
+                        :checked="formData.primary_muscles.includes(m.id)"
+                        @change="(e: Event) => {
+                          const target = e.target as HTMLInputElement;
+                          if (target.checked) {
+                            formData.primary_muscles.push(m.id);
+                          } else {
+                            formData.primary_muscles = formData.primary_muscles.filter((id: string) => id !== m.id);
+                          }
+                        }"
+                        class="w-4 h-4 rounded border-white/20 bg-white/5 text-primary-500 focus:ring-primary-500 focus:ring-offset-0"
+                      />
+                      <span class="text-sm text-gray-300">{{ m.name }}</span>
+                    </label>
+                  </div>
                 </div>
                 <div>
-                  <label class="text-xs text-gray-500 mb-1 block">Músculos Secundários</label>
-                  <select 
-                    v-model="formData.secondary_muscles" 
-                    multiple
-                    class="block w-full h-32 rounded-lg bg-white/5 border border-white/10 text-white p-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-                  >
-                    <option v-for="m in muscles" :key="m.id" :value="m.id" class="bg-[#0c0d0f] py-1">{{ m.name }}</option>
-                  </select>
+                  <label class="text-xs text-gray-500 mb-1 block">Músculos Secundários ({{ formData.secondary_muscles.length }} selecionados)</label>
+                  <div class="h-32 overflow-y-auto rounded-lg bg-white/5 border border-white/10 p-2 space-y-1 custom-scrollbar">
+                    <label 
+                      v-for="m in muscles" 
+                      :key="'secondary-' + m.id" 
+                      class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-white/10 cursor-pointer transition-colors"
+                      :class="{ 'bg-blue-500/20': formData.secondary_muscles.includes(m.id) }"
+                    >
+                      <input 
+                        type="checkbox" 
+                        :value="m.id"
+                        :checked="formData.secondary_muscles.includes(m.id)"
+                        @change="(e: Event) => {
+                          const target = e.target as HTMLInputElement;
+                          if (target.checked) {
+                            formData.secondary_muscles.push(m.id);
+                          } else {
+                            formData.secondary_muscles = formData.secondary_muscles.filter((id: string) => id !== m.id);
+                          }
+                        }"
+                        class="w-4 h-4 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-blue-500 focus:ring-offset-0"
+                      />
+                      <span class="text-sm text-gray-300">{{ m.name }}</span>
+                    </label>
+                  </div>
                 </div>
                 <div>
-                  <label class="text-xs text-gray-500 mb-1 block">Equipamentos</label>
-                  <select 
-                    v-model="formData.equipment_ids" 
-                    multiple
-                    class="block w-full h-32 rounded-lg bg-white/5 border border-white/10 text-white p-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-                  >
-                    <option v-for="e in equipment" :key="e.id" :value="e.id" class="bg-[#0c0d0f] py-1">{{ e.name }}</option>
-                  </select>
+                  <label class="text-xs text-gray-500 mb-1 block">Equipamentos ({{ formData.equipment_ids.length }} selecionados)</label>
+                  <div class="h-32 overflow-y-auto rounded-lg bg-white/5 border border-white/10 p-2 space-y-1 custom-scrollbar">
+                    <label 
+                      v-for="e in equipment" 
+                      :key="'equipment-' + e.id" 
+                      class="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-white/10 cursor-pointer transition-colors"
+                      :class="{ 'bg-green-500/20': formData.equipment_ids.includes(e.id) }"
+                    >
+                      <input 
+                        type="checkbox" 
+                        :value="e.id"
+                        :checked="formData.equipment_ids.includes(e.id)"
+                        @change="(e: Event) => {
+                          const target = e.target as HTMLInputElement;
+                          if (target.checked) {
+                            formData.equipment_ids.push((target as HTMLInputElement).value);
+                          } else {
+                            formData.equipment_ids = formData.equipment_ids.filter((id: string) => id !== (target as HTMLInputElement).value);
+                          }
+                        }"
+                        class="w-4 h-4 rounded border-white/20 bg-white/5 text-green-500 focus:ring-green-500 focus:ring-offset-0"
+                      />
+                      <span class="text-sm text-gray-300">{{ e.name }}</span>
+                    </label>
+                  </div>
                 </div>
               </div>
               
