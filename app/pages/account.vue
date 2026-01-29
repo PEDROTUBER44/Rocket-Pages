@@ -178,7 +178,7 @@ const accordionItems = computed(() => {
   
   // Adicionar seção Admin se usuário tiver qualquer role de admin
   const hasAdminRole = user.value?.roles?.some((r: string) => 
-    ['rocket_contact_admin', 'rocket_fitness_admin'].includes(r)
+    ['rocket_contact_admin', 'rocket_fitness_admin', 'enterprise_informations'].includes(r)
   );
   if (hasAdminRole) {
     items.push({ label: "Administração", icon: "i-lucide-shield", slot: "admin" });
@@ -215,6 +215,10 @@ const adminLinks = computed(() => {
       { label: 'Gerenciar Exercícios', icon: 'i-lucide-dumbbell', to: '/admin/fitness/exercises' },
       { label: 'Dados Auxiliares', icon: 'i-lucide-database', to: '/admin/fitness/auxiliary' }
     );
+  }
+
+  if (user.value?.roles?.includes('enterprise_informations')) {
+    links.push({ label: 'Empresas (Data)', icon: 'i-lucide-database-zap', to: '/admin/enterprises' });
   }
   
   return links;

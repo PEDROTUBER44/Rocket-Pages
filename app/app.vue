@@ -3,7 +3,7 @@
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "Rocket Pages",
+  "name": "Rocket",
   "url": "https://rocketweb.tech",
   "logo": "https://rocketweb.tech/logo-rocket.webp",
   "description": "Transformação Digital e Inovação Corporativa. Soluções de Desenvolvimento Web, Cloud, Marketing e Fitness.",
@@ -30,7 +30,7 @@ const organizationSchema = {
 const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "Rocket Pages",
+  "name": "Rocket",
   "url": "https://rocketweb.tech",
   "potentialAction": {
     "@type": "SearchAction",

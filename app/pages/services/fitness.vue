@@ -64,7 +64,7 @@ onMounted(() => {
 });
 
 useAppSeo({
-  title: 'Rocket Fitness',
+  title: 'Rocket Fitness: App de Treinos com IA, Gamificação e Rede Social',
   description: 'O app fitness completo: treinos, retrospectivas, sono, saúde mental, gamificação e rede social. Também para academias.',
   image: '/og-fitness.png',
   breadcrumbs: [
@@ -72,6 +72,24 @@ useAppSeo({
       { name: 'Serviços', url: 'https://rocketweb.tech/servicos' },
       { name: 'Rocket Fitness', url: 'https://rocketweb.tech/services/fitness' }
   ]
+});
+
+// Schema.org FAQ - Melhora visibilidade em buscas
+useFAQSchema([
+  { question: 'O que é o Rocket Fitness?', answer: 'O Rocket Fitness é o app fitness mais completo do mercado. Oferecemos treinos personalizados com IA, retrospectivas de desempenho, monitoramento de sono, acompanhamento de saúde mental, gamificação com níveis e medalhas, e uma rede social exclusiva para atletas.' },
+  { question: 'O app é gratuito?', answer: 'Sim! O Rocket Fitness tem uma versão gratuita com funcionalidades básicas. Para acessar recursos premium como retrospectivas detalhadas, gamificação completa e Rocket Watch, oferecemos planos a partir de R$ 9,90/mês.' },
+  { question: 'Como funciona a rede social do app?', answer: 'Você pode seguir amigos, compartilhar seus treinos, enviar desafios, conversar por chat, e assistir vídeos no Rocket Watch - nossa plataforma de conteúdo estilo Reels focada em fitness.' },
+  { question: 'Sou dono de academia. O Rocket Fitness serve para mim?', answer: 'Sim! Oferecemos soluções B2B completas: app exclusivo com sua marca, CRM inteligente, gestão de planos, check-in por QR Code, integração com catracas, e gamificação para aumentar a retenção dos seus alunos.' },
+  { question: 'Posso monitorar meu sono e saúde mental?', answer: 'Sim! O app integra com smartwatches para monitorar a qualidade do sono e oferece recursos de mindfulness e acompanhamento emocional para uma abordagem holística da sua saúde.' },
+  { question: 'Vocês oferecem período de teste?', answer: 'Sim! Oferecemos 14 dias grátis de todas as funcionalidades premium. Sem necessidade de cartão de crédito para começar.' }
+]);
+
+// Schema.org Service - Identifica como serviço
+useServiceSchema({
+  name: 'Rocket Fitness',
+  description: 'App fitness completo com treinos personalizados por IA, gamificação, monitoramento de sono e saúde mental, rede social para atletas e soluções B2B para academias.',
+  url: 'https://rocketweb.tech/services/fitness',
+  image: 'https://rocketweb.tech/og-fitness.png'
 });
 </script>
 

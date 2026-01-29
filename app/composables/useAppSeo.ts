@@ -1,7 +1,4 @@
-export interface BreadcrumbItem {
-    name: string;
-    url: string;
-}
+import type { BreadcrumbItem } from './useSchemaOrg';
 
 export interface AppSeoOptions {
     title: string;
@@ -58,9 +55,10 @@ export const useAppSeo = (options: AppSeoOptions) => {
     // URL Base do site (definida no nuxt.config ou fallback)
     const siteUrl = config.public?.siteUrl || 'https://rocketweb.tech';
 
-    // Título final (padrão: "Título | Rocket Pages")
-    const siteName = 'Rocket Pages';
-    const fullTitle = title.includes(siteName) ? title : `${title} | ${siteName}`;
+    // Título final (padrão: "Título | Rocket")
+    // Se o título já contém "Rocket" (ex: "Rocket Fitness"), não adiciona sufixo
+    const siteName = 'Rocket';
+    const fullTitle = title.toLowerCase().includes('rocket') ? title : `${title} | ${siteName}`;
 
     // Descrição Padrão
     const defaultDesc = 'Transforme seu negócio com soluções digitais de alta performance. Desenvolvimento Web, Apps e Design que geram resultados.';
@@ -106,7 +104,7 @@ export const useAppSeo = (options: AppSeoOptions) => {
         twitterTitle: fullTitle,
         twitterDescription: finalDesc,
         twitterImage: ogImage,
-        twitterSite: '@rocketpages',
+        twitterSite: '@rocket',
 
         // Robots
         robots: robotsValue,

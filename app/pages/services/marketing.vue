@@ -146,7 +146,7 @@ onMounted(() => {
 });
 
 useAppSeo({
-  title: 'Rocket Marketing',
+  title: 'Rocket Marketing: Tráfego Pago, SEO e Growth Marketing',
   description: 'Performance & Growth. Gestão de Tráfego, SEO Técnico e Automação para escalar seu negócio.',
   image: '/og-marketing.png',
   breadcrumbs: [
@@ -154,6 +154,22 @@ useAppSeo({
       { name: 'Serviços', url: 'https://rocketweb.tech/servicos' },
       { name: 'Rocket Marketing', url: 'https://rocketweb.tech/services/marketing' }
   ]
+});
+
+// Schema.org FAQ - Melhora visibilidade em buscas
+useFAQSchema([
+  { question: 'Como funciona a cobrança (Fee vs Ad Spend)?', answer: 'Trabalhamos com um fee fixo de gestão + % sobre o investimento (modelos híbridos). O investimento em mídia (Ad Spend) é pago diretamente às plataformas (Google, Facebook, etc).' },
+  { question: 'Qual o investimento mínimo recomendado?', answer: 'Depende do nicho e concorrência. Geralmente recomendamos um budget inicial que permita testes estatisticamente relevantes (mínimo de R$ 2.000/mês em mídia).' },
+  { question: 'Quanto tempo demora para ver resultados?', answer: 'Em tráfego pago (Ads), os resultados podem aparecer nas primeiras semanas. Para SEO e Branding, o trabalho é de médio a longo prazo (3 a 6 meses para maturação).' },
+  { question: 'Vocês criam os vídeos e imagens dos anúncios?', answer: 'Sim, possuímos um time de Design e Copywriting focado em conversão para produzir todos os criativos das campanhas.' }
+]);
+
+// Schema.org Service - Identifica como serviço
+useServiceSchema({
+  name: 'Rocket Marketing',
+  description: 'Marketing digital orientado a dados com gestão de tráfego pago, SEO técnico, automação de marketing e growth hacking.',
+  url: 'https://rocketweb.tech/services/marketing',
+  image: 'https://rocketweb.tech/og-marketing.png'
 });
 </script>
 

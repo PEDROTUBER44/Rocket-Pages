@@ -3,11 +3,14 @@
 
 
 // --- SEO Metadata ---
-// --- SEO Metadata ---
 useAppSeo({
-  title: 'Sobre Nós',
+  title: 'Sobre a Rocket: Nossa História, Valores e Missão',
   description: 'Conheça a Rocket: Nossa história, valores e a missão de transformar o futuro digital com design e tecnologia de ponta.',
-  image: '/og-about.jpg'
+  image: '/og-about.png',
+  breadcrumbs: [
+    { name: 'Home', url: 'https://rocketweb.tech' },
+    { name: 'Sobre Nós', url: 'https://rocketweb.tech/about' }
+  ]
 });
 
 // Timeline Data

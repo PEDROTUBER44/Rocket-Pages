@@ -11,10 +11,10 @@ export default defineNuxtConfig({
       },
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
-      title: 'Rocket Pages | Transformação Digital e Inovação Corporativa',
+      title: 'Rocket: Transformação Digital, Inovação e Tecnologia de Ponta',
       meta: [
         { name: 'theme-color', content: '#ca000d' },
-        { name: 'author', content: 'Rocket Pages' },
+        { name: 'author', content: 'Rocket' },
         { name: 'format-detection', content: 'telephone=no' },
       ],
       link: [
@@ -26,7 +26,7 @@ export default defineNuxtConfig({
 
   site: {
     url: 'https://rocketweb.tech',
-    name: 'Rocket Pages',
+    name: 'Rocket',
   },
 
   sitemap: {

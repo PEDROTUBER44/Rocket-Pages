@@ -123,7 +123,7 @@ onMounted(() => {
 });
 
 useAppSeo({
-  title: 'Rocket Devel',
+  title: 'Rocket Devel: Desenvolvimento de Software de Alta Performance',
   description: 'Desenvolvimento de software sob medida, aplicações web de alta performance e sistemas integrados.',
   image: '/og-devel.png',
   breadcrumbs: [
@@ -131,6 +131,22 @@ useAppSeo({
       { name: 'Serviços', url: 'https://rocketweb.tech/servicos' },
       { name: 'Rocket Devel', url: 'https://rocketweb.tech/services/devel' }
   ]
+});
+
+// Schema.org FAQ - Melhora visibilidade em buscas
+useFAQSchema([
+  { question: 'Qual a metodologia de trabalho utilizada?', answer: 'Trabalhamos com metodologias ágeis (Scrum/Kanban). Realizamos sprints semanais ou quinzenais, com reuniões de review para garantir que o projeto esteja sempre alinhado com as expectativas.' },
+  { question: 'Vocês dão manutenção em sistemas legados?', answer: 'Sim. Possuímos uma equipe especializada em refatoração e modernização de aplicações legadas, garantindo segurança, performance e escalabilidade sem perder as regras de negócio.' },
+  { question: 'Como funciona a propriedade intelectual (IP)?', answer: 'Todo o código produzido é 100% propriedade do cliente. Ao final do projeto (ou a qualquer momento solicitado), entregamos os repositórios completos e documentação técnica.' },
+  { question: 'Quais tecnologias vocês utilizam?', answer: 'Somos especialistas em JavaScript/TypeScript (React, Vue, Node.js) e Python. Para infraestrutura, trabalhamos principalmente com AWS e Google Cloud, utilizando Docker e Kubernetes.' }
+]);
+
+// Schema.org Service - Identifica como serviço
+useServiceSchema({
+  name: 'Rocket Devel',
+  description: 'Desenvolvimento de software sob medida, aplicações web de alta performance, apps mobile e sistemas integrados com metodologias ágeis.',
+  url: 'https://rocketweb.tech/services/devel',
+  image: 'https://rocketweb.tech/og-devel.png'
 });
 </script>
 

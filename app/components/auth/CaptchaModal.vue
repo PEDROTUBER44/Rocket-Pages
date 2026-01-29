@@ -106,6 +106,7 @@ const codeValue = computed({
                   :ui="{
                     base: 'bg-[#121315] border-0 ring-1 ring-white/10 text-center uppercase tracking-[0.5em] placeholder:text-center placeholder:tracking-normal placeholder:text-gray-700 text-white focus:ring-2 focus:ring-primary-500 rounded-xl px-4 py-3'
                   }"
+                  @keydown.enter.prevent="emit('confirm')"
                 />
             </div>
           </div>

@@ -114,8 +114,13 @@ const handleSubmit = async () => {
 };
 
 useAppSeo({
-  title: 'Contato',
+  title: 'Contato: Fale com a Rocket e Transforme seu Negócio',
   description: 'Entre em contato com a Rocket. Estamos prontos para impulsionar seu negócio com tecnologia de ponta.',
+  image: '/og-contact.png',
+  breadcrumbs: [
+    { name: 'Home', url: 'https://rocketweb.tech' },
+    { name: 'Contato', url: 'https://rocketweb.tech/contact' }
+  ]
 });
 
 // Estilo Unificado dos Inputs

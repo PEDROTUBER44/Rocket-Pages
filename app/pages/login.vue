@@ -126,12 +126,24 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
     if (isLogin.value) {
         await login(payload);
+        // Force fetch user to ensure session state is updated before navigation
+        const { fetchUser } = useAuth();
+        await fetchUser(); 
+        
         toast.add({ title: 'Bem-vindo!', color: 'primary' });
-        setTimeout(() => location.href = "/", 1000);
+        await navigateTo('/'); 
     } else {
         await register(payload);
-        toast.add({ title: 'Conta criada! Redirecionando...', color: 'primary' });
-        setTimeout(() => location.reload(), 1500);
+        toast.add({ title: 'Conta criada com sucesso!', description: 'Por favor, faça login para continuar.', color: 'primary' });
+        
+        // Switch to login tab so user can log in manually
+        isLogin.value = true;
+        
+        // Optional: Pre-fill username for convenience, but clear password for security/manual entry
+        // state.password = ""; 
+        // state.confirmPassword = "";
+        
+        await refreshCaptcha();
     }
     isCaptchaOpen.value = false;
 

@@ -5,11 +5,13 @@ export const useAuth = () => {
 
     // Global user state shared across app
     const user = useState<any>('auth_user', () => null);
+    const unauthorizedCount = useState<number>('unauthorized_count', () => 0);
 
     async function login(payload: any) {
         const res = await _submit('/api/auth/login', payload);
         if (res && res.user) {
             user.value = res.user;
+            unauthorizedCount.value = 0;
         }
         return res;
     }
@@ -18,6 +20,7 @@ export const useAuth = () => {
         const res = await _submit('/api/auth/register', payload);
         if (res && res.user) {
             user.value = res.user;
+            unauthorizedCount.value = 0;
         }
         return res;
     }
@@ -43,6 +46,7 @@ export const useAuth = () => {
             console.error('Logout error', e);
         } finally {
             user.value = null;
+            csrfCookie.value = null;
             navigateTo('/login');
         }
     }

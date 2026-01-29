@@ -1,6 +1,19 @@
 <script setup lang="ts">
 const isOpen = ref(false);
-const { user, fetchUser } = useAuth();
+const { user, fetchUser, logout } = useAuth();
+
+
+const isLoggingOut = ref(false);
+
+async function handleLogout() {
+    isLoggingOut.value = true;
+    try {
+        await logout();
+        await navigateTo('/login');
+    } finally {
+        isLoggingOut.value = false;
+    }
+}
 
 onMounted(() => {
     fetchUser();
@@ -33,6 +46,8 @@ const navigationLinks = [
   { label: 'Empresas', icon: 'i-lucide-building-2', to: '/empresas' },
   { label: 'Sobre Nós', icon: 'i-lucide-info', to: '/about' },
 ];
+
+
 </script>
 
 <template>
@@ -50,18 +65,37 @@ const navigationLinks = [
 
       <div class="flex items-center justify-end gap-2 lg:flex-1">
         <!-- Logged In State -->
+            <!-- Premium "Scroll" Interaction -->
         <template v-if="user">
-            <NuxtLink to="/account" class="flex items-center gap-2 mr-2">
-                 <UAvatar 
-                    :src="user.profile_icon_url || '/default-avatar.png'" 
-                    alt="Profile" 
-                    size="sm" 
-                    class="ring-2 ring-transparent hover:ring-primary-500 transition-all cursor-pointer" 
-                />
-            </NuxtLink>
+            <!-- Premium "Scroll" Interaction -->
+            <div class="group flex items-center p-1 rounded-full border border-transparent hover:border-white/10 bg-transparent hover:bg-[#0a0a0a]/50 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] mr-2">
+                
+                <!-- Avatar (Click -> Account) -->
+                <NuxtLink to="/account" class="relative z-20 flex-shrink-0" aria-label="Minha Conta">
+                     <UAvatar 
+                        :src="user.profile_icon_url || '/default-avatar.png'" 
+                        alt="Profile" 
+                        size="sm" 
+                        class="ring-2 ring-transparent group-hover:ring-primary-500 transition-all duration-500 cursor-pointer" 
+                    />
+                </NuxtLink>
+
+                <!-- Logout Reveal (The "Pergaminho") -->
+                <div class="max-w-0 overflow-hidden opacity-0 group-hover:max-w-[100px] group-hover:opacity-100 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]">
+                     <button 
+                        @click="handleLogout" 
+                        class="flex items-center gap-2 pl-3 pr-2 text-sm text-red-500 hover:text-red-400 font-medium whitespace-nowrap transition-colors"
+                        :disabled="isLoggingOut"
+                     >
+                          <span>Sair</span>
+                          <UIcon v-if="!isLoggingOut" name="i-lucide-log-out" class="w-4 h-4" />
+                          <UIcon v-else name="i-lucide-loader-2" class="w-4 h-4 animate-spin" />
+                     </button>
+                </div>
+            </div>
         </template>
         <!-- Logged Out State -->
-        <template v-else>
+        <template v-if="!user">
             <UButton
             label="Login"
             to="/login"
@@ -136,6 +170,17 @@ const navigationLinks = [
             <div class="mt-auto p-6 border-t border-white/10 space-y-4">
                <template v-if="user">
                     <UButton block size="lg" label="Minha Conta" to="/account" color="primary" variant="solid" class="text-white" @click="isOpen = false" />
+                    <UButton 
+                        block 
+                        size="lg"
+                        color="red" 
+                        variant="ghost" 
+                        icon="i-lucide-log-out" 
+                        class="justify-start hover:bg-red-500/10 hover:text-red-400 text-gray-400"
+                        @click="handleLogout"
+                    >
+                        Sair da Conta
+                    </UButton>
                </template>
                <template v-else>
                    <UButton block size="lg" label="Login" to="/login" color="primary" variant="solid" class="text-white" @click="isOpen = false" />
@@ -145,6 +190,8 @@ const navigationLinks = [
         </template>
       </USlideover>
     </ClientOnly>
+
+
   </header>
 </template>
 

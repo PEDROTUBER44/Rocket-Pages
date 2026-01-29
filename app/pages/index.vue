@@ -145,7 +145,7 @@ const handleSwipe = () => {
 
 // Adicionando SEO
 useAppSeo({
-  title: 'Transformação Digital e Inovação',
+  title: 'Rocket: Transformação Digital, Inovação e Tecnologia de Ponta',
   description: 'Somos a Rocket Pages. Revolucionamos seu negócio com soluções tecnológicas sob medida, design de ponta e consultoria estratégica.',
   image: '/og-home.png',
   breadcrumbs: [
@@ -235,7 +235,7 @@ useAppSeo({
 
                              <!-- Right Image (Top on Mobile) -->
                              <div class="relative w-full lg:w-3/5 h-1/2 lg:h-full lg:absolute lg:right-0 lg:top-0 lg:bottom-0 z-10">
-                                <img :src="slides[currentSlide].image" class="w-full h-full object-cover" alt="Slide Image">
+                                <img :src="slides[currentSlide].image" class="w-full h-full object-cover" :alt="`${slides[currentSlide].title} - ${slides[currentSlide].subtitle}`">
                                 <!-- Gradient Mask Desktop -->
                                 <div class="hidden lg:block absolute inset-0 bg-gradient-to-r from-white dark:from-[#0a0a0a] via-transparent to-transparent"></div>
                                 <!-- Gradient Mask Mobile (Bottom up) -->

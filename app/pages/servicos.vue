@@ -62,14 +62,22 @@ const faqItems = [
 ]
 
 useAppSeo({
-  title: 'Nossos Serviços',
+  title: 'Serviços Rocket: Fitness, Cloud, Desenvolvimento e Marketing',
   description: 'Explore o ecossistema Rocket: Fitness, Cloud, Devel e Marketing. Soluções completas para acelerar seu crescimento.',
   image: '/og-services.png',
   breadcrumbs: [
       { name: 'Home', url: 'https://rocketweb.tech' },
       { name: 'Serviços', url: 'https://rocketweb.tech/servicos' }
   ]
-})
+});
+
+// Schema.org FAQ - Melhora visibilidade em buscas
+useFAQSchema([
+  { question: 'Como funciona o processo de orçamento?', answer: 'Após o primeiro contato, agendamos uma reunião de discovery para entender suas necessidades. Em até 48h, enviamos uma proposta técnica e comercial detalhada, sem compromisso.' },
+  { question: 'Vocês atendem empresas de qual porte?', answer: 'Atendemos desde startups em estágio inicial (MVP) até grandes corporações que precisam de modernização de legado ou squads dedicados.' },
+  { question: 'Qual o prazo médio de entrega?', answer: 'Depende da complexidade. Landing pages e sites institucionais levam de 2 a 4 semanas. Produtos digitais complexos (SaaS, Apps) trabalham com cronogramas de 2 a 6 meses, com entregas parciais a cada sprint.' },
+  { question: 'Oferecem suporte após o lançamento?', answer: 'Sim! Oferecemos planos de sustentação, manutenção evolutiva e monitoramento 24/7 para garantir que sua operação nunca pare.' }
+]);
 
 // Scroll Functionality
 const servicesSection = ref<HTMLElement | null>(null);

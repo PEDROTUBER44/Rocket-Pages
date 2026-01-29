@@ -93,7 +93,7 @@ onMounted(() => {
 });
 
 useAppSeo({
-  title: 'Rocket Cloud',
+  title: 'Rocket Cloud: Armazenamento Seguro e Ilimitado na Nuvem',
   description: 'Seu Espaço Digital Seguro e Ilimitado. Criptografia ponta-a-ponta e acesso de qualquer lugar.',
   image: '/og-cloud.png',
   breadcrumbs: [
@@ -101,6 +101,21 @@ useAppSeo({
       { name: 'Serviços', url: 'https://rocketweb.tech/servicos' },
       { name: 'Rocket Cloud', url: 'https://rocketweb.tech/services/cloud' }
   ]
+});
+
+// Schema.org FAQ - Melhora visibilidade em buscas
+useFAQSchema([
+  { question: 'Meus dados estão realmente seguros?', answer: 'Absolutamente. Utilizamos criptografia de ponta a ponta. Isso significa que seus arquivos são embaralhados no seu dispositivo e só você possui a chave para desembaralhá-los. Nós nunca temos acesso ao conteúdo dos seus arquivos.' },
+  { question: 'Como funciona o compartilhamento?', answer: 'Você pode gerar um link seguro para qualquer arquivo ou pasta. Para maior segurança, defina uma data de expiração ou proteja o link com uma senha. O destinatário não precisa ter uma conta Rocket Drive para baixar.' },
+  { question: 'Posso acessar meus arquivos offline?', answer: 'Sim! Com o aplicativo Rocket Drive para desktop e mobile, você pode marcar pastas inteiras para ficarem disponíveis offline. Qualquer alteração feita será sincronizada assim que você se conectar novamente.' }
+]);
+
+// Schema.org Service - Identifica como serviço
+useServiceSchema({
+  name: 'Rocket Cloud',
+  description: 'Armazenamento em nuvem seguro com criptografia ponta-a-ponta, backup automático e acesso de qualquer dispositivo.',
+  url: 'https://rocketweb.tech/services/cloud',
+  image: 'https://rocketweb.tech/og-cloud.png'
 });
 </script>
 

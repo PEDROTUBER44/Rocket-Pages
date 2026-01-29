@@ -91,9 +91,12 @@ onMounted(async () => {
       duration: Math.random() * 10 + 10 + 's'
     });
   }
-  await fetchUser();
-  await loadAuxiliaryData();
-  await loadExercises();
+  // Execute API calls in parallel for faster page load
+  await Promise.all([
+    fetchUser(),
+    loadAuxiliaryData(),
+    loadExercises()
+  ]);
 });
 
 /* --- Navigation Data (same as account.vue) --- */
@@ -105,7 +108,7 @@ const accordionItems = computed(() => {
   ];
   
   const hasAdminRole = user.value?.roles?.some((r: string) => 
-    ['rocket_contact_admin', 'rocket_fitness_admin'].includes(r)
+    ['rocket_contact_admin', 'rocket_fitness_admin', 'enterprise_informations'].includes(r)
   );
   if (hasAdminRole) {
     items.push({ label: "Administração", icon: "i-lucide-shield", slot: "admin", defaultOpen: true } as any);
@@ -139,6 +142,10 @@ const adminLinks = computed(() => {
       { label: 'Gerenciar Exercícios', icon: 'i-lucide-dumbbell', to: '/admin/fitness/exercises', active: true },
       { label: 'Dados Auxiliares', icon: 'i-lucide-database', to: '/admin/fitness/auxiliary' }
     );
+  }
+
+  if (user.value?.roles?.includes('enterprise_informations')) {
+    links.push({ label: 'Empresas (Data)', icon: 'i-lucide-database-zap', to: '/admin/enterprises' });
   }
   
   return links;
@@ -198,6 +205,7 @@ function openCreateModal() {
 
 async function openEditModal(exerciseId: string) {
   isLoading.value = true;
+  imageFile.value = null; // [FIX] Limpar arquivo residual de edições anteriores
   try {
     const res = await $fetch<any>(`/api/fitness/exercises/${exerciseId}`);
     editingExercise.value = res;
@@ -205,20 +213,31 @@ async function openEditModal(exerciseId: string) {
     // Populate form
     formData.name = res.name || '';
     formData.description = res.description || '';
-    formData.category_id = res.category?.id || '';
+    formData.category_id = typeof res.category === 'string' ? res.category : (res.category?.id || '');
     formData.difficulty = res.difficulty || 'BEGINNER';
     formData.mechanics = res.mechanics || 'COMPOUND';
     formData.force = res.force || 'PUSH';
-    formData.default_tracking_mode = res.default_tracking_mode || res.tracking || 'REPS_AND_WEIGHT';
+    formData.default_tracking_mode = `default_tracking_mode` in res ? res.default_tracking_mode : (res.tracking || 'REPS_AND_WEIGHT');
     formData.met_value = res.met_value || 3.5;
     formData.is_unilateral = res.is_unilateral || false;
     formData.is_bodyweight = res.is_bodyweight || false;
     formData.search_tags = (res.search_tags || res.tags || []).join(', ');
     
-    // Muscles
-    formData.primary_muscles = (res.muscles || []).filter((m: any) => m.role === 'PRIMARY').map((m: any) => m.id);
-    formData.secondary_muscles = (res.muscles || []).filter((m: any) => m.role === 'SECONDARY').map((m: any) => m.id);
-    formData.equipment_ids = (res.equipment || []).map((e: any) => e.id);
+    // Muscles - Handle both new (flat arrays) and old (object array) formats
+    if (res.primary_muscles || res.secondary_muscles) {
+      formData.primary_muscles = res.primary_muscles || [];
+      formData.secondary_muscles = res.secondary_muscles || [];
+    } else {
+      formData.primary_muscles = (res.muscles || []).filter((m: any) => m.role === 'PRIMARY').map((m: any) => m.id);
+      formData.secondary_muscles = (res.muscles || []).filter((m: any) => m.role === 'SECONDARY').map((m: any) => m.id);
+    }
+    
+    // Equipment - Handle both new (flat array of IDs) and old (object array) formats
+    if (res.equipment_ids) {
+      formData.equipment_ids = res.equipment_ids;
+    } else {
+      formData.equipment_ids = (res.equipment || []).map((e: any) => e.id);
+    }
     
     // Instructions
     if (res.instructions && res.instructions.length > 0) {
@@ -366,7 +385,7 @@ async function saveExercise() {
       difficulty: formData.difficulty,
       mechanics: formData.mechanics,
       force: formData.force,
-      default_tracking_mode: formData.default_tracking_mode,
+      tracking: formData.default_tracking_mode || 'REPS_AND_WEIGHT', // SEMPRE envia valor válido
       met_value: formData.met_value || 3.5,
       is_unilateral: formData.is_unilateral,
       is_bodyweight: formData.is_bodyweight,
@@ -868,6 +887,10 @@ useAppSeo({
                     </div>
                   </div>
                   <div class="flex-1">
+                    <div v-if="editingExercise && (editingExercise.img || editingExercise.img_exercise_url) && !imageFile" class="mb-2 text-sm text-gray-300 flex items-center gap-2">
+                        <UIcon name="i-lucide-link" class="w-4 h-4 text-primary-400" />
+                        <span>Imagem atual: <span class="text-white font-medium">{{ (editingExercise.img_exercise_url || editingExercise.img).split('/').pop() }}</span></span>
+                    </div>
                     <input 
                       type="file" 
                       accept="image/jpeg,image/png,image/webp,image/avif,image/gif" 
